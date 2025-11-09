@@ -12,6 +12,7 @@ import AIInterview from "./AIInterview";
 function AppContent() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
+  const basename = process.env.PUBLIC_URL;
 
   return (
     <div className="bg-body text-main">

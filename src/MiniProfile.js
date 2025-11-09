@@ -7,7 +7,7 @@ function MiniProfile() {
     <div id="mini-profile-container" className="profile-container">
       <div className="mini-profile-card">
         <div className="profile-content">
-          <img src="user.png" alt="사용자 아이콘" className="user-icon" />
+          <img src="%PUBLIC_URL%/user.png" alt="사용자 아이콘" className="user-icon" />
           <p className="profile-text">로그인이 필요합니다.</p>
         </div>
         <div className="profile-footer">
