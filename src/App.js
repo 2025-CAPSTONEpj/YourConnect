@@ -38,7 +38,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/YC">
       <AppContent />
     </Router>
   );

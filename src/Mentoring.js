@@ -22,7 +22,6 @@ function Mentoring() {
     setIsAccepted(false);
     setShowModal(true);
 
-    // 3초 후 수락 완료로 변경
     setTimeout(() => {
       setIsAccepted(true);
     }, 3000);
