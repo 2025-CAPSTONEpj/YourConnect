@@ -190,7 +190,7 @@ class JobApplication(models.Model):
         return f"{self.user.username} → {self.job.title}"
 
 
-# ✅ 11️⃣ 공고 북마크 (JOB_BOOKMARK)
+# ✅ 11. 공고 북마크 (JOB_BOOKMARK)
 class JobBookmark(models.Model):
     job = models.ForeignKey(JobPost, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -201,3 +201,27 @@ class JobBookmark(models.Model):
 
     def __str__(self):
         return f"{self.user.username} bookmarked {self.job.title}"
+
+# ✅ 12. 옵션 (OPTION)   
+class Option(models.Model):
+    CATEGORY_CHOICES = [
+        ('직급', '직급'),
+        ('경력', '경력'),
+        ('직무', '직무'),
+        ('기업형태', '기업형태'),
+        ('근무지역', '근무지역'),
+    ]
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"[{self.category}] {self.value}"
+
+# ✅ 13. 사용자 선택 옵션 (USER_SELECTION)
+class UserSelection(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    option = models.ForeignKey(Option, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.option.value}"
+
