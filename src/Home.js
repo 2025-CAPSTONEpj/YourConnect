@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import MiniProfile from './MiniProfile';
 import './Home.css';
 
 function Home() {
@@ -116,38 +117,46 @@ function Home() {
 
   return (
     <div className="home-main-container">
-      {/* 각 분야별 멘토 추천 섹션 */}
-      <section className="section-mentor-recommend">
-        <div className="section-header">
-          <h2>각 분야별 멘토 추천</h2>
-          <button 
-            className="more-btn"
-            onClick={() => navigate('/mentoring')}
-          >
-            조건 별로 보기
-          </button>
-        </div>
-        
-        <div className="mentor-grid-home">
-          {mentors.map((mentor, index) => (
-            <div key={index} className="mentor-card-home">
-              <div className="mentor-header-actions">
-                <button className="detail-btn">상세 정보</button>
-                <button className="apply-btn-home">멘토링 신청</button>
+      {/* 멘토 추천과 미니프로필 2단 레이아웃 */}
+      <div className="mentor-profile-layout">
+        {/* 각 분야별 멘토 추천 섹션 */}
+        <section className="section-mentor-recommend">
+          <div className="section-header">
+            <h2>각 분야별 멘토 추천</h2>
+            <button 
+              className="more-btn"
+              onClick={() => navigate('/mentoring')}
+            >
+              조건 별로 보기
+            </button>
+          </div>
+          
+          <div className="mentor-grid-home">
+            {mentors.map((mentor, index) => (
+              <div key={index} className="mentor-card-home">
+                <div className="mentor-header-actions">
+                  <button className="detail-btn">상세 정보</button>
+                  <button className="apply-btn-home">멘토링 신청</button>
+                </div>
+                <img src={mentor.image} alt={mentor.title} className="mentor-avatar" />
+                <div className="mentor-rating">
+                  <span className="label">{mentor.name}</span>
+                  <span className="star">⭐</span>
+                  <span className="score">{mentor.rating}</span>
+                  <span className="count">({mentor.ratingCount})</span>
+                </div>
+                <h3 className="mentor-name">{mentor.title}</h3>
+                <p className="mentor-field">{mentor.field}</p>
               </div>
-              <img src={mentor.image} alt={mentor.title} className="mentor-avatar" />
-              <div className="mentor-rating">
-                <span className="label">{mentor.name}</span>
-                <span className="star">⭐</span>
-                <span className="score">{mentor.rating}</span>
-                <span className="count">({mentor.ratingCount})</span>
-              </div>
-              <h3 className="mentor-name">{mentor.title}</h3>
-              <p className="mentor-field">{mentor.field}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+
+        {/* 미니프로필 */}
+        <aside className="mini-profile-sidebar">
+          <MiniProfile />
+        </aside>
+      </div>
 
       <div className="two-column-layout">
         {/* 지금 가장 주목받는 공고에요! */}
@@ -217,12 +226,6 @@ function Home() {
           </div>
         </section>
       </div>
-
-      {/* 로그인이 필요합니다 카드 */}
-      <aside className="login-prompt-card">
-        <div className="login-icon">👤</div>
-        <p>로그인이 필요한 서비스입니다.</p>
-      </aside>
     </div>
   );
 }

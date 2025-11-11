@@ -46,17 +46,24 @@
   margin-bottom: 50px;
 }
 
+.mentor-profile-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 24px;
+  margin-bottom: 50px;
+}
+
 .mentor-grid-home {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 .mentor-card-home {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 24px;
+  padding: 16px;
   text-align: center;
   transition: all 0.3s;
   position: relative;
@@ -101,11 +108,11 @@
 }
 
 .mentor-avatar {
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
   border: 2px solid #f3f4f6;
 }
 
@@ -138,17 +145,17 @@
 }
 
 .mentor-name {
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin: 10px 0 6px 0;
+  margin: 8px 0 4px 0;
   color: #1a1a1a;
 }
 
 .mentor-field {
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   color: #6b7280;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 /* 2단 레이아웃 */
@@ -157,6 +164,11 @@
   grid-template-columns: 1fr 420px;
   gap: 24px;
   margin-bottom: 40px;
+}
+
+/* 미니프로필 사이드바 */
+.mini-profile-sidebar {
+  top: 0;
 }
 
 /* 채용 공고 섹션 */
@@ -385,6 +397,10 @@
 
 /* 반응형 */
 @media (max-width: 1200px) {
+  .mentor-profile-layout {
+    grid-template-columns: 1fr;
+  }
+  
   .mentor-grid-home {
     grid-template-columns: repeat(2, 1fr);
   }
