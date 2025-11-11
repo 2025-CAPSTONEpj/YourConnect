@@ -1,27 +1,29 @@
 import requests
 from bs4 import BeautifulSoup
-from .models import UserSelection, Option
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 import json
+import os
+
+User = get_user_model()
 
 def build_query_for_user(user):
-    selections = UserSelection.objects.filter(user=user).select_related('option')
-    if not selections:
+    """사용자 스펙과 희망직무를 기반으로 검색어 생성"""
+    if not user.spec_job and not user.desired_job:
         return None
+    return f"{user.spec_job or ''} {user.desired_job or ''} 채용공고".strip()
 
-    data = {s.option.category: s.option.value for s in selections}
-    job = data.get('직무', '')
-    exp = data.get('경력', '')
-    loc = data.get('근무지역', '')
-    corp = data.get('기업형태', '')
-    return f"{job} {exp} {loc} {corp} 채용공고"
 
 def crawl_jobs(keyword):
+    """사람인에서 해당 키워드로 채용공고 크롤링"""
     url = f"https://www.saramin.co.kr/zf_user/search?searchword={keyword}"
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
+    if response.status_code != 200:
+        print(f"[⚠️] 요청 실패 ({response.status_code})")
+        return []
 
+    soup = BeautifulSoup(response.text, "html.parser")
     jobs = []
+
     for item in soup.select("h2.job_tit a"):
         title = item.text.strip()
         link = "https://www.saramin.co.kr" + item["href"]
@@ -29,14 +31,22 @@ def crawl_jobs(keyword):
 
     return jobs
 
+
 def run_weekly_crawl():
+    """전체 사용자에 대해 맞춤 크롤링 실행"""
     users = User.objects.all()
+    base_dir = os.path.join(os.getcwd(), "crawl_results")
+    os.makedirs(base_dir, exist_ok=True)
+
     for user in users:
         query = build_query_for_user(user)
         if not query:
-            print(f"[⚠️] {user.username} 선택값 없음, 건너뜀")
+            print(f"[⚠️] {user.username}: 선택값 없음, 건너뜀")
             continue
+
         results = crawl_jobs(query)
-        with open(f"results_{user.username}.json", "w", encoding="utf-8") as f:
+        save_path = os.path.join(base_dir, f"results_{user.username}.json")
+        with open(save_path, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
-        print(f"[💾] {user.username} 결과 저장 완료 ({len(results)}건)")
+
+        print(f"[💾] {user.username}: {len(results)}건 저장 완료")

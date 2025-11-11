@@ -1,9 +1,8 @@
 from django.db import models
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
 
 
-# ✅ 1️⃣ 사용자 기본 정보 (USER)
+# ✅ 1️⃣ 사용자(User)
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('멘토', '멘토'),
@@ -20,13 +19,22 @@ class User(AbstractUser):
         ('탈퇴', '탈퇴'),
     ]
 
-    # Django 기본 username/email 구조 확장
+    # 공통 직무 선택지
+    JOB_CHOICES = [
+        ('프론트엔드', '프론트엔드'),
+        ('백엔드', '백엔드'),
+        ('데이터', '데이터'),
+        ('디자인', '디자인'),
+        ('기획/PM', '기획/PM'),
+        ('DevOps', 'DevOps'),
+    ]
+
+    # 기본 사용자 정보
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='멘티')
     phone = models.CharField(max_length=20, blank=True, null=True)
     resume_link = models.URLField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
-    field = models.CharField(max_length=100, blank=True, null=True)
     rating_avg = models.FloatField(default=0)
     total_reviews = models.IntegerField(default=0)
     membership = models.ForeignKey('Membership', on_delete=models.SET_NULL, null=True, blank=True)
@@ -34,14 +42,18 @@ class User(AbstractUser):
     login_type = models.CharField(max_length=10, choices=LOGIN_CHOICES, default='일반')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='활성')
 
+    # ✅ 추가: 보유 스펙 / 희망 직무
+    spec_job = models.CharField(max_length=30, choices=JOB_CHOICES, blank=True, null=True, verbose_name="보유 스펙")
+    desired_job = models.CharField(max_length=30, choices=JOB_CHOICES, blank=True, null=True, verbose_name="희망 직무")
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     def __str__(self):
-        return f"{self.username} ({self.role})"
+        return f"{self.username} ({self.role}) | 보유: {self.spec_job or '-'} → 희망: {self.desired_job or '-'}"
 
 
-# ✅ 2️⃣ 멤버십 요금제 (MEMBERSHIP)
+# ✅ 2️⃣ 멤버십 요금제
 class Membership(models.Model):
     STATUS_CHOICES = [
         ('활성', '활성'),
@@ -58,7 +70,7 @@ class Membership(models.Model):
         return self.name
 
 
-# ✅ 3️⃣ 경력 정보 (EXPERIENCE)
+# ✅ 3️⃣ 경력 정보
 class Experience(models.Model):
     CAREER_TYPE_CHOICES = [
         ('정규직', '정규직'),
@@ -81,15 +93,14 @@ class Experience(models.Model):
         return f"{self.company} - {self.role}"
 
 
-# ✅ 4️⃣ 채팅방 (CHAT)
+# ✅ 4️⃣ 채팅방
 class Chat(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f"Chat #{self.id}"
 
 
-# ✅ 5️⃣ 채팅 참여자 (CHAT_PARTICIPANT)
+# ✅ 5️⃣ 채팅 참여자
 class ChatParticipant(models.Model):
     ROLE_CHOICES = [
         ('멘토', '멘토'),
@@ -101,35 +112,33 @@ class ChatParticipant(models.Model):
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('chat', 'user')  # 복합키
+        unique_together = ('chat', 'user')
 
     def __str__(self):
         return f"{self.user.username} in Chat {self.chat.id}"
 
 
-# ✅ 6️⃣ 채팅 메시지 (CHAT_MESSAGE)
+# ✅ 6️⃣ 채팅 메시지
 class ChatMessage(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f"Message from {self.sender.username} ({self.chat.id})"
 
 
-# ✅ 7️⃣ AI 피드백 로그 (AI_FEEDBACK)
+# ✅ 7️⃣ AI 피드백 로그
 class AiFeedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     input_text = models.TextField()
     ai_response = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f"AI Feedback - {self.user.username}"
 
 
-# ✅ 8️⃣ 멘토링 예약 (MENTOR_SESSION) — duration 제거 반영
+# ✅ 8️⃣ 멘토링 예약
 class MentorSession(models.Model):
     STATUS_CHOICES = [
         ('예약', '예약'),
@@ -142,12 +151,11 @@ class MentorSession(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='예약')
     created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f"Session {self.id} ({self.mentor.username} ↔ {self.mentee.username})"
 
 
-# ✅ 9️⃣ 채용공고 (JOB_POST)
+# ✅ 9️⃣ 채용공고
 class JobPost(models.Model):
     STATUS_CHOICES = [
         ('모집중', '모집중'),
@@ -160,7 +168,7 @@ class JobPost(models.Model):
         ('계약직', '계약직'),
         ('프리랜서', '프리랜서'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # 기업만 가능
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     company = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
@@ -173,24 +181,22 @@ class JobPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='모집중')
-
     def __str__(self):
         return f"{self.title} ({self.company})"
 
 
-# ✅ 🔟 채용 지원 내역 (JOB_APPLICATION)
+# ✅ 🔟 채용 지원 내역
 class JobApplication(models.Model):
     job = models.ForeignKey(JobPost, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     resume_link = models.URLField(blank=True, null=True)
     cover_letter = models.TextField(blank=True, null=True)
     applied_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f"{self.user.username} → {self.job.title}"
 
 
-# ✅ 11. 공고 북마크 (JOB_BOOKMARK)
+# ✅ 11. 공고 북마크
 class JobBookmark(models.Model):
     job = models.ForeignKey(JobPost, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -201,27 +207,3 @@ class JobBookmark(models.Model):
 
     def __str__(self):
         return f"{self.user.username} bookmarked {self.job.title}"
-
-# ✅ 12. 옵션 (OPTION)   
-class Option(models.Model):
-    CATEGORY_CHOICES = [
-        ('직급', '직급'),
-        ('경력', '경력'),
-        ('직무', '직무'),
-        ('기업형태', '기업형태'),
-        ('근무지역', '근무지역'),
-    ]
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    value = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"[{self.category}] {self.value}"
-
-# ✅ 13. 사용자 선택 옵션 (USER_SELECTION)
-class UserSelection(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    option = models.ForeignKey(Option, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.option.value}"
-
