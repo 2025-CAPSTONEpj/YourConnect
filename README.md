@@ -4,18 +4,39 @@
 
 ## 가상환경 + REDIS + CELERY + DJANGO VSCODE에서 실행하는 법
 
-1. 터미널에서 redis 실행<Br>
-redis-server<Br><br>
+1. 터미널 1에서 redis 실행<Br>
+```
+redis-server
+```
 *창에 이렇게 뜨면 정상 ✅<Br>
+```
 Ready to accept connections tcp<Br>
-2. 터미널 2: 가상환경 실행 + Celery 실행<Br>
+```
+2. 터미널 2에서 가상환경 실행 + Celery 실행<Br>
 *프로젝트 폴더 (C:\Users\user\YourConnectDB\career_platform)로 이동한 뒤:
-
+```
 .\venv\Scripts\activate
 celery -A career_platform worker -l info --pool=solo
+```
 
-
-아래처럼 “ready” 나오면 성공:
-
+*아래처럼 “ready” 나오면 성공
+```
 celery@DESKTOP ready.
-   
+   ```
+3. 터미널 3에서 DJANGO 서버 실행
+   ```
+   (venv) python manage.py runserver
+```
+이제 http://127.0.0.1:8000 들어가면 Django 웹 서버도 켜짐 ✅
+
+*💡 팁
+
+VSCode 터미널은 여러 개 열 수 있으니까 (+ 버튼 눌러서 새 탭)
+각각 Redis / Celery / Django 전용으로 나눠서 두기
+
+이렇게 해두면 PowerShell 따로 안 켜도 구동 가능!!
+그냥 VSCode만 켜면 서버 전체 스택이 구동!!
+
+
+
+
