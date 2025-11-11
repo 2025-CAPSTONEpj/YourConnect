@@ -1,16 +1,21 @@
-# first_app
+# YourConnectDB
 
-A new Flutter project.
+유어커넥트 프로젝트입니도~
 
-## Getting Started
+## 가상환경 + REDIS + CELERY + DJANGO VSCODE에서 실행하는 법
 
-This project is a starting point for a Flutter application.
+1. 터미널에서 redis 실행<Br>
+redis-server<Br><br>
+*창에 이렇게 뜨면 정상 ✅<Br>
+Ready to accept connections tcp<Br>
+2. 터미널 2: 가상환경 실행 + Celery 실행<Br>
+*프로젝트 폴더 (C:\Users\user\YourConnectDB\career_platform)로 이동한 뒤:
 
-A few resources to get you started if this is your first Flutter project:
+.\venv\Scripts\activate
+celery -A career_platform worker -l info --pool=solo
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+아래처럼 “ready” 나오면 성공:
+
+celery@DESKTOP ready.
+   
