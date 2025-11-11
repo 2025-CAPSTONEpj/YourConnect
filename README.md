@@ -24,7 +24,7 @@ celery -A career_platform worker -l info --pool=solo
 celery@DESKTOP ready.
    ```
 3. 터미널 3에서 DJANGO 서버 실행
-   ```
+```
    (venv) python manage.py runserver
 ```
 이제 http://127.0.0.1:8000 들어가면 Django 웹 서버도 켜짐 ✅
