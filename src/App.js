@@ -2,12 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./Header";
 import Home from "./Home"; // 새로운 홈 페이지
-import MiniProfile from "./MiniProfile";
 import LoginForm from "./LoginForm";
 import AIInterview from "./AIInterview";
 import Mentoring from "./Mentoring";
 import MentoringChat from "./MentoringChat";
-import Headhunting from "./Headhunting";
+import Headhunting from "./Headhunting.jsx";
+import Profile from "./Profile.jsx";
+import Spec from "./Spec.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -21,12 +22,12 @@ function AppContent() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<MiniProfile />} />
-          <Route path="/miniprofile" element={<MiniProfile />} />
           <Route path="/ai-interview" element={<AIInterview />} />
           <Route path="/mentoring" element={<Mentoring />} />
           <Route path="/mentoring-chat" element={<MentoringChat />} />
           <Route path="/headhunting" element={<Headhunting />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/spec" element={<Spec />} />
           <Route path="/login" element={<LoginForm />} />
         </Routes>
       </main>

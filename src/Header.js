@@ -26,7 +26,7 @@ function Header() {
             </Link>
             <Link to="/headhunting" className="menu-item font-bold text-lg hover-purple">
               헤드 헌팅🏢
-            </Link>
+              </Link>
           </div>
         )}
 

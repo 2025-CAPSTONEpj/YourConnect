@@ -1,4 +1,4 @@
-/* Mentoring Chat 페이지 전용 스타일 */
+
 .mentoring-chat-container {
   min-height: 100vh;
   background: #fff;
@@ -14,7 +14,6 @@
   margin: 0 auto;
 }
 
-/* Sidebar */
 .chat-sidebar {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -44,8 +43,6 @@
 .chat-sidebar .profile-img {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
   flex-shrink: 0;
 }
 
@@ -111,7 +108,6 @@
   border-color: #7c3aed;
 }
 
-/* Chat area */
 .chat-area {
   display: flex;
   flex-direction: column;
@@ -154,7 +150,8 @@
   gap: 16px;
 }
 
-.question, .answer {
+.question,
+.answer {
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 16px;
@@ -174,7 +171,6 @@
   background: #ffffff;
 }
 
-/* Chat input */
 .chat-input {
   border-top: 1px solid #ddd;
   padding: 12px 16px;

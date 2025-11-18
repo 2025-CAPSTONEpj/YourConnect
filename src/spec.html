@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보유 스펙 수정</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="spec.css">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+</head>
+<body>
+    <div class="spec-container">
+        <h2>보유 스펙 수정</h2>
+
+        <!-- 현재 저장된 스펙 표시 -->
+        <div id="currentSpecSummary" class="current-spec-summary">
+            <h3>현재 등록된 스펙</h3>
+            
+            <!-- 여러 스펙 박스들이 여기에 동적으로 생성됨 -->
+            <div id="currentSpecsContainer">
+                <!-- JavaScript로 동적 생성 -->
+            </div>
+        </div>
+
+        <!-- 회사명 입력 -->
+        <div class="company-input-row">
+            <label for="companyNameInput">회사명</label>
+            <input type="text" id="companyNameInput" placeholder="회사명을 입력하세요" />
+            <button type="button" id="companyNameConfirmBtn" class="confirm-btn">확인</button>
+            <span id="companyNameDisplay" class="company-display"></span>
+        </div>
+
+        <!-- 직급/직책 -->
+        <section>
+            <h3>직급/직책</h3>
+            <div class="grid" id="ranks-grid"></div>
+        </section>
+
+        <!-- 경력 (별도 박스에 배치) -->
+        <section>
+            <h3>경력</h3>
+            <div class="career-input-group">
+                <div class="input-row">
+                    <input type="number" id="careerYears" min="0" max="50" placeholder="0" value="0">
+                    <span class="suffix">년</span>
+                </div>
+                <div class="input-row">
+                    <input type="number" id="careerMonths" min="0" max="11" placeholder="0" value="0">
+                    <span class="suffix">개월</span>
+                </div>
+                <button type="button" id="careerConfirmBtn" class="confirm-btn">확인</button>
+                <span id="careerDisplay" class="career-display"></span>
+            </div>
+        </section>
+
+        <!-- 직무 -->
+        <section>
+            <h3>직무</h3>
+            <div class="grid" id="jobs-grid"></div>
+        </section>
+
+        <!-- 기업형태 -->
+        <section>
+            <h3>기업형태</h3>
+            <div class="grid" id="companies-grid"></div>
+        </section>
+
+        <!-- 근무지역 -->
+        <section>
+            <h3>근무지역</h3>
+            <div class="grid" id="regions-grid"></div>
+        </section>
+
+        <div class="save-box">
+            <button class="save-btn" id="save-button">정보 저장하기</button>
+        </div>
+    </div>
+
+        <!-- 저장 팝업 모달 (profile.html과 동일한 디자인) -->
+        <div id="saveModal" class="modal" aria-hidden="true">
+            <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                <p id="modalTitle">정보가 저장되었습니다</p>
+                <button id="modalOk" class="save-btn">확인</button>
+            </div>
+        </div>
+
+        <script src="spec.js"></script>
+    </body>
+    </html>

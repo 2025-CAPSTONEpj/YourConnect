@@ -1,35 +1,249 @@
-/* Headhunting 페이지 전용 스타일 */
+/* headhunting.css - index.css의 공통 스타일 사용 */
+
+/* 페이지 컨테이너 */
 .headhunt-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 40px auto;
   padding: 30px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateX(-12px);
 }
 
-.headhunt-container h2 {
-  font-size: 1.6rem;
+/* 상단 우측 정렬 바 */
+.top-right-bar {
+  max-width: 1000px;
+  margin: 40px auto 0;
+  display: flex;
+  justify-content: flex-end;
+  transform: translateX(-12px);
+}
+
+/* Profile box */
+.profile-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 12px 12px 1px 12px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 120%;
+  max-width: 240px;
+  margin-left: -20px;
+  transform-origin: left center;
+}
+
+.profile-box .profile-img {
+  width: 48px;
+  height: 48px;
+  margin-right: 12px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 4px;
+}
+
+.profile-info h3 {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  color: #111;
+}
+
+.profile-info a {
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.profile-info a:hover {
+  color: #38bdf8;
+}
+
+.profile-edit {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-edit:hover {
+  color: #333;
+}
+
+/* 보유 스펙 섹션 */
+.spec-summary-section {
+  margin-bottom: 30px;
+}
+
+.spec-summary-section h3 {
+  font-size: 1.3rem;
   font-weight: 700;
-  margin-bottom: 20px;
-  color: #1a1a1a;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+/* 헤드헌팅 스펙 박스 */
+.headhunt-spec-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.headhunt-spec-box:last-child {
+  margin-bottom: 0;
+}
+
+.headhunt-spec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.headhunt-spec-header:hover {
+  background: #f3f4f6;
+}
+
+.headhunt-spec-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.headhunt-spec-info .preview-company {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.headhunt-spec-info .preview-career {
+  color: #374151;
+}
+
+.headhunt-spec-info .preview-modified {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.headhunt-spec-header .toggle-icon {
+  color: #6b7280;
+  font-size: 0.9rem;
+  transition: transform 0.3s;
+  user-select: none;
+}
+
+.headhunt-spec-content {
+  font-size: 0.95rem;
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+  opacity: 1;
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 0 0 8px 8px;
+}
+
+.headhunt-spec-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 20px;
+}
+
+.headhunt-spec-content .spec-section {
+  padding: 0;
+}
+
+.headhunt-spec-content .spec-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.headhunt-spec-content .spec-item:last-child {
+  border-bottom: none;
+}
+
+.headhunt-spec-content .spec-item strong {
+  color: #374151;
+  margin-right: 8px;
+  min-width: 80px;
+  display: inline-block;
+}
+
+.headhunt-spec-content .spec-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 15px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 15px;
+}
+
+.headhunt-spec-content .edit-spec-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: #2563eb;
+  color: white;
+}
+
+.headhunt-spec-content .edit-spec-btn:hover {
+  background: #1d4ed8;
+}
+
+.select-spec-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: #2563eb;
+  color: white;
+}
+
+.select-spec-btn:hover {
+  background: #1d4ed8;
 }
 
 /* 필터 섹션 */
-.filter-section {
-  margin-bottom: 30px;
-  padding: 20px;
-  background: #fafafa;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+.filter-section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 16px;
+  margin-top: 0;
 }
 
 .filter-group {
-  margin-bottom: 20px;
-}
-
-.filter-group:last-child {
-  margin-bottom: 0;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
 }
 
 .filter-group label {
@@ -40,185 +254,226 @@
   font-weight: 600;
 }
 
-/* Grid button layout */
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.grid .separator {
-  width: 100%;
-  height: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  pointer-events: none;
-}
-
-.grid .filter-btn {
-  border: 1px solid #ccc;
-  background: #f9fafb;
-  padding: 8px 14px;
-  border-radius: 6px;
+/* 드롭다운 기능 */
+.collapsible-label {
   cursor: pointer;
-  font-size: 0.9rem;
-  color: #374151;
-  transition: all 0.2s;
-  white-space: nowrap;
-  height: auto;
-  min-height: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  width: 100%;
 }
 
-.grid .filter-btn:hover:not(:disabled) {
+.toggle-btn {
   background: #f3f4f6;
-  border-color: #bbb;
-}
-
-.grid .filter-btn.selected {
-  background: #7c3aed;
-  color: #fff;
-  border-color: #7c3aed;
-}
-
-.grid .filter-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #f3f4f6;
-}
-
-/* 검색어 입력 */
-.filter-group input[type="text"] {
-  padding: 10px 12px;
-  width: 70%;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 0.95rem;
-  font-family: inherit;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
 }
 
-.filter-group input[type="text"]:focus {
-  outline: none;
-  border-color: #7c3aed;
+.toggle-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.toggle-text::before {
+  content: '+ ';
+  font-weight: bold;
+}
+
+.toggle-btn.expanded .toggle-text::before {
+  content: '− ';
+}
+
+.collapsible-content {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.collapsible-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+
+/* 검색 영역 */
+.search-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-group label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.filter-group input[type="text"] {
+  padding: 6px 8px;
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
 }
 
 .search-btn {
-  background: #333;
+  background: #2563eb;
   color: #fff;
   border: none;
-  padding: 10px 20px;
-  margin-left: 8px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  margin-left: 0;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: background 0.2s;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .search-btn:hover {
-  background: #1a1a1a;
+  background: #1d4ed8;
 }
 
-/* 선택 조건 */
-.selected {
-  margin-top: 20px;
-  padding: 16px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+.reset-btn {
+  background: #6b7280;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  margin-left: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
-.selected label {
-  font-weight: 600;
-  color: #374151;
-  display: block;
-  margin-bottom: 8px;
+.reset-btn:hover {
+  background: #4b5563;
 }
 
-.selected p {
-  margin: 0;
-  color: #6b7280;
+/* 선택된 조건 요약 (칩) */
+.selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2563eb;
+  color: #fff;
+  border: 1px solid #2563eb;
+  border-radius: 9999px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.chip-remove {
+  appearance: none;
+  background: transparent;
+  border: none;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.chip-remove:hover {
+  color: #ffffff;
+  opacity: 1;
 }
 
 /* 채용 공고 리스트 */
 .job-list {
   margin-top: 30px;
-}
-
-.job-list h3 {
-  margin-bottom: 20px;
-  color: #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .job-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 16px 20px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 12px;
-  background: white;
-  transition: all 0.2s;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .job-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-color: #d1d5db;
-}
-
-.job-info {
-  flex: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .job-info h4 {
   font-size: 1.1rem;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   color: #1a1a1a;
 }
 
 .job-info p {
+  margin: 0;
   font-size: 0.9rem;
   color: #6b7280;
-  margin: 0;
 }
 
 .apply-btn {
-  background: #38bdf8;
+  background: #2563eb;
   color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
-  transition: all 0.2s;
-  white-space: nowrap;
+  transition: background-color 0.2s;
 }
 
 .apply-btn:hover {
-  background: #0ea5e9;
+  background: #1d4ed8;
+}
+
+/* 검색 결과 없음 메시지 */
+.no-result-message {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-size: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  margin-top: 20px;
 }
 
 /* 페이지네이션 */
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 30px;
-  gap: 8px;
+  gap: 6px;
+  margin-top: 20px;
 }
 
 .pagination button {
   border: 1px solid #e5e7eb;
   background: #fff;
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  min-width: 40px;
-  transition: all 0.2s;
+  min-width: 36px;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .pagination button:hover {
@@ -227,25 +482,84 @@
 }
 
 .pagination button.active {
-  background: #7c3aed;
-  color: white;
-  border-color: #7c3aed;
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.pagination button.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* 레이아웃 */
+.headhunt-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  padding-left: 60px;
+}
+
+.headhunt-content {
+  flex: 1;
+  min-width: 800px;
+  margin-right: 340px;
+}
+
+.headhunt-sidebar {
+  position: fixed;
+  top: 100px;
+  right: 80px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: auto;
+  z-index: 1000;
+}
+
+.headhunt-sidebar .sidebar-box {
+  width: 120%;
+  max-width: 360px;
+  margin-left: -20px;
+  transform-origin: left center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 0.85rem;
+  min-height: 220px;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.sidebar-content {
+  flex: 1;
+  background: #fff;
+  font-size: 0.9rem;
+  color: #6b7280;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
 }
 
 /* 반응형 */
-@media (max-width: 768px) {
-  .headhunt-container {
-    margin: 20px;
-    padding: 20px;
-  }
-
-  .job-card {
+@media (max-width: 1300px) {
+  .headhunt-layout {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
   }
-
-  .apply-btn {
+  
+  .headhunt-sidebar {
     width: 100%;
+    position: static;
   }
 }

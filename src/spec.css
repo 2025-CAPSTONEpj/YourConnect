@@ -1,0 +1,688 @@
+/* Header */
+.header-main {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* ✅ 수직 정렬 추가 */
+    padding: 0 40px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+    height: 80px; /* ✅ 고정 높이로 균일한 헤더 유지 */
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* ✅ 수직 정렬 통일 */
+    width: 100%;
+    max-width: 1400px;
+}
+
+.logo-area a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    margin: 0; /* ✅ 여백 제거 */
+}
+
+.logo-img {
+    width: 110px;
+    height: auto;
+    display: block;
+}
+
+.menu-category-group {
+    display: flex;
+    gap: 190px;
+    align-items: center;
+    margin: 0; /* ✅ 여백 제거 */
+}
+
+.menu-item {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #222;
+    transition: color 0.2s;
+}
+
+.hover-purple:hover {
+    color: #8b5cf6;
+}
+
+.auth-group {
+    display: flex;
+    gap: 12px;
+    align-items: center; /* ✅ 정렬 추가 */
+    margin: 0; /* ✅ 여백 제거 */
+}
+
+.btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    border: 1px solid #8b5cf6;
+    background: white;
+    color: #8b5cf6;
+}
+
+.btn-primary:hover {
+    background: #8b5cf6;
+    color: white;
+}
+
+.btn-secondary {
+    border: 1px solid #aaa;
+    background: white;
+    color: #222;
+}
+
+.btn-secondary:hover {
+    background: #f4f4f4;
+}
+
+/* Main Content */
+.spec-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    font-family: "Pretendard", sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.spec-container h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+/* 현재 등록된 스펙 표시 박스 */
+.current-spec-summary {
+    margin-bottom: 30px;
+}
+
+.current-spec-summary > h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+/* 스펙 미리보기 박스 */
+.spec-preview-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.spec-preview-box:last-child {
+    margin-bottom: 0;
+}
+
+.spec-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.spec-preview-header:hover {
+    background: #f3f4f6;
+}
+
+.spec-preview-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.toggle-icon {
+    color: #6b7280;
+    font-size: 0.9rem;
+    transition: transform 0.3s;
+    user-select: none;
+}
+
+.preview-company {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.preview-career {
+    color: #374151;
+}
+
+.preview-modified {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.spec-preview-text {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+}
+
+.preview-separator {
+    color: #d1d5db;
+}
+
+.preview-modified {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.no-spec-preview {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.spec-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.spec-summary-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.toggle-spec-btn {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.toggle-spec-btn:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.toggle-spec-text::before {
+    content: '+ ';
+    font-weight: bold;
+}
+
+.toggle-spec-btn.expanded .toggle-spec-text::before {
+    content: '− ';
+}
+
+.current-spec-content {
+    font-size: 0.95rem;
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    opacity: 1;
+    padding: 0 20px 16px 20px;
+    background: #fff;
+}
+
+.current-spec-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding: 0 20px;
+}
+
+.saved-spec-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spec-row {
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+.spec-row strong {
+    color: #374151;
+    margin-right: 8px;
+}
+
+.no-spec-message {
+    color: #6b7280;
+    font-style: italic;
+    margin: 0;
+}
+
+/* 스펙 수정 영역 (접기/펼치기) - 삭제됨, 이제 현재 등록된 스펙에만 적용 */
+
+section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+/* 스펙 액션 버튼 */
+.spec-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 15px;
+}
+
+.edit-spec-btn, .delete-spec-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.edit-spec-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.edit-spec-btn:hover {
+    background: #1d4ed8;
+}
+
+.delete-spec-btn {
+    background: #ef4444;
+    color: white;
+}
+
+.delete-spec-btn:hover {
+    background: #dc2626;
+}
+
+/* 스펙 아이템 */
+.spec-section {
+    padding: 0;
+}
+
+.spec-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.spec-item:last-child {
+    border-bottom: none;
+}
+
+.spec-item strong {
+    color: #374151;
+    margin-right: 8px;
+    min-width: 80px;
+    display: inline-block;
+}
+
+section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #374151;
+}
+
+.subtext {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* 직무 그룹 구분을 위한 스타일 */
+.grid button:empty {
+    display: block;
+    width: 100%;
+    height: 1px;
+    padding: 0;
+    margin: 5px 0;
+    background: transparent;
+    border: none;
+    pointer-events: none;
+}
+
+.grid button {
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.grid button:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.grid button.selected {
+    background: #2563eb; /* 브랜드 블루로 통일 */
+    color: #fff;
+    border-color: #2563eb;
+}
+
+.grid button.disabled {
+    opacity: 0.55;
+    pointer-events: none;
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+}
+
+.separator {
+    width: 100%;
+    height: 8px;
+    background: transparent;
+    border: none;
+    margin: 6px 0;
+    pointer-events: none;
+}
+
+.save-box {
+    text-align: right;
+    margin-top: 40px;
+}
+
+.save-btn {
+    background: #2563eb; /* 브랜드 블루 */
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.save-btn:hover {
+    background: #1d4ed8; /* 조금 더 진한 블루 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .spec-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .grid {
+        gap: 8px;
+    }
+
+    .grid button {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* 애니메이션 */
+.grid button {
+    transform: scale(1);
+}
+
+.grid button:active {
+    transform: scale(0.95);
+}
+
+.grid button.selected {
+    animation: selectPop 0.2s ease-out;
+}
+
+@keyframes selectPop {
+    0% { transform: scale(0.95); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* modal styles (copied from profile.css to keep consistent design) */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    z-index: 9999;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px 24px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 260px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.modal-content p {
+    font-size: 1rem;
+    color: #111827;
+    margin: 0 0 12px 0;
+}
+
+.modal-content .save-btn {
+    padding: 8px 20px;
+}
+
+/* 회사명 입력 */
+.company-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.company-input-row label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.company-input-row input[type="text"] {
+    flex: 0 1 260px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.confirm-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s; /* ✅ save-btn 과 동일한 전환 효과 */
+}
+
+.confirm-btn:hover { background: #1d4ed8; }
+/* ✅ 눌림(pressed) 상태를 save-btn 과 동일한 톤으로 유지 */
+.confirm-btn:active {
+    background: #1d4ed8;
+    transform: translateY(1px);
+}
+
+/* ✅ 키보드 접근성 강화를 위한 focus 표시 (save-btn 과 톤 일치) */
+.confirm-btn:focus-visible {
+    outline: 3px solid rgba(37,99,235,0.35);
+    outline-offset: 2px;
+}
+
+.career-display {
+    font-weight: 600;
+    color: #1f2937;
+    margin-left: 4px;
+    white-space: nowrap;
+}
+
+.company-display {
+    color: #111827;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* 인라인 경력 레이아웃 (섹션 박스 제거 버전) */
+.career-inline {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 30px 0; /* 기존 section 간격과 유사 */
+}
+
+.career-inline .career-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+}
+
+/* 경력 입력 필드 스타일 */
+.career-input-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.input-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-row .suffix {
+    color: #374151;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.input-row input[type="number"] {
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #374151;
+    background: #f9fafb;
+    transition: all 0.2s;
+}
+
+.input-row input[type="number"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-row input[type="number"]:hover {
+    border-color: #d1d5db;
+    background: #fff;
+}
+
+/* Remove spinner buttons */
+.input-row input[type="number"]::-webkit-outer-spin-button,
+.input-row input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-row input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+/* ��� �Է� �ʵ� ��Ÿ�� */
+.career-input-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-row label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+    min-width: 40px;
+}
+
+.input-row input[type="number"] {
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #374151;
+    background: #f9fafb;
+    transition: all 0.2s;
+}
+
+.input-row input[type="number"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-row input[type="number"]:hover {
+    border-color: #d1d5db;
+    background: #fff;
+}
+
+/* Remove spinner buttons */
+.input-row input[type="number"]::-webkit-outer-spin-button,
+.input-row input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-row input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: none;
+}

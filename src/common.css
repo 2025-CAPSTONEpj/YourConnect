@@ -1,15 +1,14 @@
 /* style.css - 미니프로필과 CareerBuddy용 */
 .profile-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  position: relative;
+  position: fixed;
+  right: 40px;
+  top: 140px;
+  width: 18rem;
+  z-index: 20;
 }
 
 .mini-profile-card {
-  position: absolute;
-  right: 1.5rem;
-  top: 2rem;
+  position: relative;
   width: 18rem;
   background-color: white;
   border: 1px solid #e5e7eb;
