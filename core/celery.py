@@ -15,8 +15,8 @@ app.autodiscover_tasks()
 
 # 🔁 매주 월요일 오전 9시에 실행되도록 스케줄링
 app.conf.beat_schedule = {
-    "weekly-crawl-every-monday-9am": {
-        "task": "career_app.tasks.weekly_crawl_task",
+     "weekly-crawl-every-monday-9am": {
+        "task": "core.tasks.weekly_crawl_task",  # 🔥 여기만 core로!
         "schedule": crontab(hour=9, minute=0, day_of_week=1),  # 월요일 09:00
     },
 }
