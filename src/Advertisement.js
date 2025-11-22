@@ -3,12 +3,24 @@ import './Advertisement.css';
 
 function Advertisement() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isFollowingMiniProfile, setIsFollowingMiniProfile] = useState(true);
 
   useEffect(() => {
     // 초기 위치 설정 (MiniProfile 아래)
-    const initialX = window.innerWidth - 330;
-    const initialY = 140 + 180; // MiniProfile 높이 + 여백
-    setPosition({ x: initialX, y: initialY });
+    const updatePosition = () => {
+      const initialX = window.innerWidth - 330;
+      const initialY = 140 + 180; // MiniProfile 높이 + 여백
+      setPosition({ x: initialX, y: initialY });
+    };
+
+    updatePosition();
+
+    // 창 크기 변경 시 위치 재계산
+    const handleResize = () => {
+      if (isFollowingMiniProfile) {
+        updatePosition();
+      }
+    };
 
     // MiniProfile의 위치 변경 감지
     const handleMiniProfileMove = (e) => {
@@ -17,14 +29,17 @@ function Advertisement() {
         x: miniProfilePos.x,
         y: miniProfilePos.y + 180 // MiniProfile 높이 + 여백
       });
+      setIsFollowingMiniProfile(false);
     };
 
     window.addEventListener('miniProfileMove', handleMiniProfileMove);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('miniProfileMove', handleMiniProfileMove);
+      window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isFollowingMiniProfile]);
 
   return (
     <aside 

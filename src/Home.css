@@ -44,12 +44,13 @@
 /* 멘토 추천 섹션 */
 .section-mentor-recommend {
   margin-bottom: 10px;
+  grid-column: 1 / 3; /* 2단까지만 차지 */
 }
 
 .mentor-profile-layout {
   display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 24px;
+  grid-template-columns: 1fr 1fr 280px;
+  gap: 20px;
   margin-bottom: 50px;
 }
 

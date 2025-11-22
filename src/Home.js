@@ -148,7 +148,6 @@ function Home() {
         </div>
 
         <div className="two-column-layout">
-          {/* 지금 가장 주목받는 공고에요! */}
           <section className="section-job-postings">
             <div className="section-header">
               <h2>지금 가장 주목받는 공고에요!</h2>

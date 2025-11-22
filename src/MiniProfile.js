@@ -6,6 +6,7 @@ function MiniProfile() {
   const [position, setPosition] = useState({ x: window.innerWidth - 330, y: 140 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isManuallyMoved, setIsManuallyMoved] = useState(false);
 
   const handleMouseDown = (e) => {
     // 링크나 버튼 클릭 시 드래그 방지
@@ -14,6 +15,7 @@ function MiniProfile() {
     }
     
     setIsDragging(true);
+    setIsManuallyMoved(true);
     setDragStart({
       x: e.clientX - position.x,
       y: e.clientY - position.y
@@ -53,6 +55,25 @@ function MiniProfile() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, dragStart, position]);
+
+  // 창 크기 변경 시 위치 재계산
+  useEffect(() => {
+    const handleResize = () => {
+      if (!isManuallyMoved) {
+        const newX = window.innerWidth - 330;
+        const newY = 140;
+        setPosition({ x: newX, y: newY });
+        
+        // 광고 컴포넌트에게 위치 변경 알림
+        window.dispatchEvent(new CustomEvent('miniProfileMove', { 
+          detail: { x: newX, y: newY }
+        }));
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isManuallyMoved]);
 
   return (
     <div 
