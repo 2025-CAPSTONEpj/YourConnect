@@ -5,10 +5,11 @@ import './spec.css';
 function Spec() {
   const navigate = useNavigate();
   const [state, setState] = useState({
-    selectedRanks: [],
-    selectedJobs: [],
-    selectedCompanies: [],
-    selectedRegions: [],
+    selectedDuties: [],
+    selectedSubDuty: null,
+    selectedPosition: null,
+    selectedCompanyType: null,
+    selectedRegion: null,
     editingSpecId: null
   });
 
@@ -17,27 +18,21 @@ function Spec() {
   const [companyName, setCompanyName] = useState('');
   const [careerYears, setCareerYears] = useState(0);
   const [careerMonths, setCareerMonths] = useState(0);
-  const [companyDisplay, setCompanyDisplay] = useState('');
-  const [careerDisplay, setCareerDisplay] = useState('');
+  const [showDetailBox, setShowDetailBox] = useState(false);
+  const [showAdditionalBox, setShowAdditionalBox] = useState(false);
 
   const data = {
-    ranks: [
-      "과장·차장급", "부장급", "팀장/매니저/실장", "파트장/그룹장",
-      "임원/CEO", "주임·대리급", "본부장/센터장", "인턴"
-    ],
-    jobs: [
-      "개발자", "FE (프론트엔드)", "BE (백엔드)", "App (모바일 앱 개발)", "Data Engineer/Data Scientist", "",
-      "DevOps (시스템 운영/배포 엔지니어)", "",
-      "PM/PO/기획자", "서비스 기획", "PO (프로덕트 오너)", "PM (프로젝트/프로덕트 매니저)", "",
-      "UI/UX", "BX (브랜드 경험 디자이너)", "그래픽 디자이너", "모션 디자이너", "",
-      "데이터 분석가", "데이터 엔지니어", "머신러닝 엔지니어", "",
-      "인프라/클라우드", "클라우드", "보안", "",
-      "QA/테스터", "QA 테스트 엔지니어", "",
-      "마케터", "콘텐츠", "브랜드", "성장 마케터", "",
-      "경영/운영", "사업전략", "운영 매니저", "",
-      "HR/리크루터", "HR 매니저", "리크루터"
-    ],
-    companies: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"],
+    duties: ["개발", "데이터", "인프라/플랫폼/Devops", "기획", "디자인", "QA/테스트"],
+    subDuties: {
+      "개발": ["FE", "BE", "APP"],
+      "데이터": ["데이터 분석가", "데이터 엔지니어", "머신러닝 엔지니어"],
+      "인프라/플랫폼/Devops": ["Devops", "클라우드", "보안"],
+      "기획": ["서비스 기획", "PO", "PM"],
+      "디자인": ["UIUX", "BX", "그래픽 디자이너", "모션 디자이너"],
+      "QA/테스트": ["QA", "테스트 엔지니어"]
+    },
+    positions: ["사원", "주임", "대리", "과장", "차장", "부장", "임원"],
+    companyTypes: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"],
     regions: [
       "서울", "경기", "인천", "대전", "세종", "충남", "충북", "광주",
       "전남", "전북", "대구", "경북", "부산", "울산", "경남", "강원", "제주"
@@ -80,20 +75,64 @@ function Spec() {
       const key = `selected${category}`;
       const selectedItems = prevState[key];
 
-      const isSelected = selectedItems.includes(item);
-      const newSelected = isSelected ? [] : [item];
+      if (category === 'Duties') {
+        // 직무는 단일 선택
+        const newSelected = selectedItems?.includes(item) ? [] : [item];
+        
+        if (newSelected.length > 0) {
+          return {
+            ...prevState,
+            selectedDuties: newSelected,
+            selectedSubDuty: null,
+            showDetailBox: true,
+            showAdditionalBox: false
+          };
+        } else {
+          return {
+            ...prevState,
+            selectedDuties: [],
+            selectedSubDuty: null,
+            showDetailBox: false,
+            showAdditionalBox: false
+          };
+        }
+      }
 
+      return prevState;
+    });
+  };
+
+  const selectSubDuty = (subDuty) => {
+    setState(prevState => {
+      if (prevState.selectedSubDuty === subDuty) {
+        return {
+          ...prevState,
+          selectedSubDuty: null,
+          showAdditionalBox: false
+        };
+      } else {
+        return {
+          ...prevState,
+          selectedSubDuty: subDuty,
+          showAdditionalBox: true
+        };
+      }
+    });
+  };
+
+  const selectItem = (item, stateKey) => {
+    setState(prevState => {
+      const currentValue = prevState[stateKey];
       return {
         ...prevState,
-        [key]: newSelected
+        [stateKey]: currentValue === item ? null : item
       };
     });
   };
 
   const renderButtons = (category) => {
-    const categoryLower = category.toLowerCase();
-    const items = data[categoryLower];
-    const key = `selected${category}`;
+    const items = data[category];
+    const key = `selected${category.charAt(0).toUpperCase() + category.slice(1)}`;
     const selectedItems = state[key];
 
     if (!items) {
@@ -101,19 +140,15 @@ function Spec() {
     }
 
     return items.map((item, idx) => {
-      if (item === "") {
-        return <button key={`sep-${idx}`} className="separator" disabled></button>;
-      }
-
-      const isSelected = selectedItems.includes(item);
-      const isDisabled = !isSelected && selectedItems.length > 0;
+      const isSelected = selectedItems?.includes(item);
+      const isDisabled = !isSelected && selectedItems?.length > 0;
 
       return (
         <button
-          key={item}
+          key={idx}
           className={`${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
           disabled={isDisabled}
-          onClick={() => toggleSelect(item, category)}
+          onClick={() => toggleSelect(item, category.charAt(0).toUpperCase() + category.slice(1))}
         >
           {item}
         </button>
@@ -121,29 +156,34 @@ function Spec() {
     });
   };
 
-  const handleCompanyConfirm = () => {
-    setCompanyDisplay(companyName.trim());
-  };
-
-  const handleCareerConfirm = () => {
-    const years = parseInt(careerYears) || 0;
-    const months = parseInt(careerMonths) || 0;
-
-    let careerString = '';
-    if (years === 0 && months === 0) {
-      careerString = '';
-    } else if (years === 0) {
-      careerString = `${months}개월`;
-    } else if (months === 0) {
-      careerString = `${years}년`;
-    } else {
-      careerString = `${years}년 ${months}개월`;
-    }
-
-    setCareerDisplay(careerString);
+  const renderSelectionButtons = (items, selectedItem, stateKey) => {
+    return items.map((item, idx) => {
+      const isSelected = selectedItem === item;
+      
+      return (
+        <button
+          key={idx}
+          className={isSelected ? 'selected' : ''}
+          onClick={() => selectItem(item, stateKey)}
+        >
+          {item}
+        </button>
+      );
+    });
   };
 
   const handleSave = () => {
+    // 필수 필드 검증
+    if (!state.selectedDuties || state.selectedDuties.length === 0) {
+      alert('직무를 선택해주세요.');
+      return;
+    }
+    
+    if (!state.selectedSubDuty) {
+      alert('세부 직무를 선택해주세요.');
+      return;
+    }
+
     const years = parseInt(careerYears) || 0;
     const months = parseInt(careerMonths) || 0;
 
@@ -160,12 +200,13 @@ function Spec() {
 
     const newSpec = {
       id: state.editingSpecId || Date.now().toString(),
-      ranks: state.selectedRanks,
-      careers: [careerString],
-      jobs: state.selectedJobs,
-      companies: state.selectedCompanies,
-      regions: state.selectedRegions,
+      duty: state.selectedDuties[0] || '',
+      subDuty: state.selectedSubDuty || '',
       companyName: companyName.trim(),
+      career: careerString,
+      position: state.selectedPosition || '',
+      companyType: state.selectedCompanyType || '',
+      region: state.selectedRegion || '',
       savedAt: new Date().toISOString()
     };
 
@@ -195,6 +236,24 @@ function Spec() {
 
     localStorage.setItem('userSpecs', JSON.stringify(specsArray));
     console.log('📝 All specs saved to localStorage:', specsArray);
+    
+    // 폼 초기화
+    setState({
+      selectedDuties: [],
+      selectedSubDuty: null,
+      selectedPosition: null,
+      selectedCompanyType: null,
+      selectedRegion: null,
+      showDetailBox: false,
+      showAdditionalBox: false,
+      editingSpecId: null
+    });
+    setCompanyName('');
+    setCareerYears('');
+    setCareerMonths('');
+    
+    // 스펙 목록 다시 로드
+    loadSpecs();
     setShowModal(true);
   };
 
@@ -206,20 +265,39 @@ function Spec() {
   const handleEditSpec = (specId) => {
     const spec = specs.find(s => s.id === specId);
     if (spec) {
+      console.log('🔧 Editing spec:', spec);
+      
+      const duty = spec.duty || '';
+      const subDuty = spec.subDuty || '';
+      
       setState({
-        selectedRanks: spec.ranks || [],
-        selectedJobs: spec.jobs || [],
-        selectedCompanies: spec.companies || [],
-        selectedRegions: spec.regions || [],
+        selectedDuties: duty ? [duty] : [],
+        selectedSubDuty: subDuty,
+        selectedPosition: spec.position || '',
+        selectedCompanyType: spec.companyType || '',
+        selectedRegion: spec.region || '',
+        showDetailBox: !!duty,
+        showAdditionalBox: !!subDuty,
         editingSpecId: specId
       });
+      
       setCompanyName(spec.companyName || '');
-      if (spec.careers && spec.careers[0]) {
-        const careerStr = spec.careers[0];
-        const yearMatch = careerStr.match(/(\d+)년/);
-        const monthMatch = careerStr.match(/(\d+)개월/);
-        setCareerYears(yearMatch ? parseInt(yearMatch[1]) : 0);
-        setCareerMonths(monthMatch ? parseInt(monthMatch[1]) : 0);
+      
+      const careerMatch = spec.career?.match(/(\d+)년\s*(\d+)개월|(\d+)년|(\d+)개월|경력 없음/);
+      if (careerMatch) {
+        if (spec.career === '경력 없음') {
+          setCareerYears('0');
+          setCareerMonths('0');
+        } else if (careerMatch[1] && careerMatch[2]) {
+          setCareerYears(careerMatch[1]);
+          setCareerMonths(careerMatch[2]);
+        } else if (careerMatch[3]) {
+          setCareerYears(careerMatch[3]);
+          setCareerMonths('0');
+        } else if (careerMatch[4]) {
+          setCareerYears('0');
+          setCareerMonths(careerMatch[4]);
+        }
       }
     }
   };
@@ -272,7 +350,7 @@ function Spec() {
                   <div className="spec-preview-info">
                     <span className="preview-company">{spec.companyName || '회사명 없음'}</span>
                     <span className="preview-career">
-                      {spec.careers && spec.careers[0] ? spec.careers[0] : '경력 없음'}
+                      {spec.career || '경력 없음'}
                     </span>
                     {spec.savedAt && (
                       <span className="preview-modified">
@@ -284,29 +362,34 @@ function Spec() {
                 </div>
                 <div id={`spec-${spec.id}`} className="current-spec-content collapsed">
                   <div className="spec-section">
-                    {spec.ranks && spec.ranks.length > 0 && (
+                    {spec.duty && (
                       <div className="spec-item">
-                        <strong>직급:</strong> {spec.ranks.join(', ')}
+                        <strong>직무:</strong> {spec.duty}
                       </div>
                     )}
-                    {spec.careers && spec.careers.length > 0 && (
+                    {spec.subDuty && (
                       <div className="spec-item">
-                        <strong>경력:</strong> {spec.careers.join(', ')}
+                        <strong>세부직무:</strong> {spec.subDuty}
                       </div>
                     )}
-                    {spec.jobs && spec.jobs.length > 0 && (
+                    {spec.position && (
                       <div className="spec-item">
-                        <strong>직무:</strong> {spec.jobs.join(', ')}
+                        <strong>직급:</strong> {spec.position}
                       </div>
                     )}
-                    {spec.companies && spec.companies.length > 0 && (
+                    {spec.career && (
                       <div className="spec-item">
-                        <strong>기업형태:</strong> {spec.companies.join(', ')}
+                        <strong>경력:</strong> {spec.career}
                       </div>
                     )}
-                    {spec.regions && spec.regions.length > 0 && (
+                    {spec.companyType && (
                       <div className="spec-item">
-                        <strong>지역:</strong> {spec.regions.join(', ')}
+                        <strong>기업형태:</strong> {spec.companyType}
+                      </div>
+                    )}
+                    {spec.region && (
+                      <div className="spec-item">
+                        <strong>지역:</strong> {spec.region}
                       </div>
                     )}
                     {spec.companyName && (
@@ -339,73 +422,86 @@ function Spec() {
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
         />
-        <button type="button" id="companyNameConfirmBtn" className="confirm-btn" onClick={handleCompanyConfirm}>
-          확인
-        </button>
-        <span id="companyNameDisplay" className="company-display">{companyDisplay}</span>
       </div>
 
       <section>
-        <h3>직급/직책</h3>
-        <div className="grid" id="ranks-grid">
-          {renderButtons('Ranks')}
-        </div>
-      </section>
-
-      <section>
-        <h3>경력</h3>
-        <div className="career-input-group">
-          <div className="input-row">
-            <input
-              type="number"
-              id="careerYears"
-              min="0"
-              max="50"
-              placeholder="0"
-              value={careerYears}
-              onChange={(e) => setCareerYears(e.target.value)}
-            />
-            <span className="suffix">년</span>
-          </div>
-          <div className="input-row">
-            <input
-              type="number"
-              id="careerMonths"
-              min="0"
-              max="11"
-              placeholder="0"
-              value={careerMonths}
-              onChange={(e) => setCareerMonths(e.target.value)}
-            />
-            <span className="suffix">개월</span>
-          </div>
-          <button type="button" id="careerConfirmBtn" className="confirm-btn" onClick={handleCareerConfirm}>
-            확인
-          </button>
-          <span id="careerDisplay" className="career-display">{careerDisplay}</span>
-        </div>
-      </section>
-
-      <section>
         <h3>직무</h3>
-        <div className="grid" id="jobs-grid">
-          {renderButtons('Jobs')}
+        <div className="grid" id="duties-grid">
+          {renderButtons('duties')}
         </div>
       </section>
 
-      <section>
-        <h3>기업형태</h3>
-        <div className="grid" id="companies-grid">
-          {renderButtons('Companies')}
-        </div>
-      </section>
+      {state.showDetailBox && (
+        <section className="detail-box">
+          <h3>세부 직무</h3>
+          <div className="grid" id="sub-duties-grid">
+            {state.selectedDuties[0] && data.subDuties[state.selectedDuties[0]]?.map((subDuty, idx) => (
+              <button
+                key={idx}
+                className={state.selectedSubDuty === subDuty ? 'selected' : ''}
+                onClick={() => selectSubDuty(subDuty)}
+              >
+                {subDuty}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
-      <section>
-        <h3>근무지역</h3>
-        <div className="grid" id="regions-grid">
-          {renderButtons('Regions')}
+      {state.showAdditionalBox && (
+        <div className="additional-box">
+          <section>
+            <h3>경력</h3>
+            <div className="career-input-group">
+              <div className="input-row">
+                <input
+                  type="number"
+                  id="careerYears"
+                  min="0"
+                  max="50"
+                  placeholder="0"
+                  value={careerYears}
+                  onChange={(e) => setCareerYears(e.target.value)}
+                />
+                <span className="suffix">년</span>
+              </div>
+              <div className="input-row">
+                <input
+                  type="number"
+                  id="careerMonths"
+                  min="0"
+                  max="11"
+                  placeholder="0"
+                  value={careerMonths}
+                  onChange={(e) => setCareerMonths(e.target.value)}
+                />
+                <span className="suffix">개월</span>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h3>직급/직책</h3>
+            <div className="grid" id="positions-grid">
+              {renderSelectionButtons(data.positions, state.selectedPosition, 'selectedPosition')}
+            </div>
+          </section>
+
+          <section>
+            <h3>기업형태</h3>
+            <div className="grid" id="company-types-grid">
+              {renderSelectionButtons(data.companyTypes, state.selectedCompanyType, 'selectedCompanyType')}
+            </div>
+          </section>
+
+          <section>
+            <h3>근무지역</h3>
+            <div className="grid" id="regions-grid">
+              {renderSelectionButtons(data.regions, state.selectedRegion, 'selectedRegion')}
+            </div>
+          </section>
         </div>
-      </section>
+      )}
 
       <div className="save-box">
         <button className="save-btn" id="save-button" onClick={handleSave}>

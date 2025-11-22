@@ -65,7 +65,7 @@ function Mentoring() {
 
         <aside className="mentoring-aside">
           <h4>이가윤님 👩🏻‍💻</h4>
-          <p>회원정보 수정</p>
+          <p onClick={() => navigate('/profile')} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#9333EA'} onMouseLeave={(e) => e.target.style.color = 'inherit'}>회원정보 수정</p>
           <hr />
           <h4>분야 선택</h4>
           <p>개발자 / PM / 디자이너</p>

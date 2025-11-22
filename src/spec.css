@@ -557,6 +557,47 @@ section h3 {
     white-space: nowrap;
 }
 
+/* 경력 입력 */
+.career-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.career-input-row input[type="number"] {
+    width: 80px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    font-size: 1rem;
+}
+
+.career-input-row span {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* 추가 정보 박스 */
+#additional-box {
+    margin-top: 20px;
+}
+
+#additional-box section {
+    margin-bottom: 20px;
+}
+
+#specCompanyNameInput {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    font-size: 1rem;
+}
+
 .company-display {
     color: #111827;
     font-weight: 600;

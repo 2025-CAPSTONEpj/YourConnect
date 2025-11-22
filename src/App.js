@@ -16,7 +16,6 @@ function AppContent() {
 
   return (
     <div className="bg-body text-main">
-      {/* 로그인 페이지가 아닐 때만 헤더 표시 */}
       {!isLoginPage && <Header />}
       
       <main>

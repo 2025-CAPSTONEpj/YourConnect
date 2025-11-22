@@ -40,8 +40,8 @@ function Profile() {
     let totalMonths = 0;
     
     specs.forEach(spec => {
-      if (spec.careers && spec.careers.length > 0) {
-        const careerStr = spec.careers[0];
+      if (spec.career) {
+        const careerStr = spec.career;
         const yearMatch = careerStr.match(/(\d+)년/);
         const monthMatch = careerStr.match(/(\d+)개월/);
         
@@ -91,49 +91,48 @@ function Profile() {
 
   return (
     <div className="profile-main-container">
-      {/* 상단 프로필 요약 */}
-      <section className="profile-top">
-        {/* 왼쪽: 프로필 이미지 */}
-        <div className="profile-left">
+      {/* 상단 영역: 프로필 + 스펙 정보 통합 */}
+      <section className="profile-spec-combined">
+        {/* 상단: 프로필 이미지와 정보 */}
+        <div className="profile-header-row">
           <div className="profile-img" aria-hidden="true">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
               <circle cx="12" cy="8" r="3.5" fill="#f3f4f6" stroke="#9ca3af" strokeWidth="1.2" />
               <path d="M4 21c1.5-4 6.5-6 8-6s6.5 2 8 6" fill="#f3f4f6" stroke="#9ca3af" strokeWidth="1.2" />
             </svg>
           </div>
-        </div>
-        
-        {/* 오른쪽: 이름, 멤버십, 스펙 정보 */}
-        <div className="profile-right">
-          <div className="profile-header">
-            <h2 className="name">이가윤</h2>
-            <p className="membership">멤버십 구분: <strong>PRO</strong></p>
-            <p className="pro-tag">
+          <div className="profile-info-section">
+            <div className="profile-name-row">
+              <h2 className="profile-name">이가윤</h2>
+              <p className="profile-membership">멤버십 구분: <strong>PRO</strong></p>
+            </div>
+            <p className="profile-membership-link">
               <a href="#" className="membership-link">멤버십 관리 페이지 바로가기 &gt;</a>
             </p>
           </div>
+        </div>
 
-          <div id="specDisplay" className="spec-display-box">
-            <h3 className="spec-display-title">내 스펙 정보</h3>
-            <div id="specContent" className="spec-content">
-              {specs.length === 0 ? (
-                <div className="no-spec-container">
-                  <p className="no-spec-message">아직 작성된 정보가 없습니다.</p>
-                  <button className="create-spec-btn" onClick={handleCreateSpec}>
-                    작성하기
-                  </button>
+        {/* 하단: 스펙 정보 */}
+        <div className="spec-info-section">
+          <h3 className="spec-section-title">내 스펙 정보</h3>
+          <div className="spec-content-box">
+            {specs.length === 0 ? (
+              <div className="no-spec-container">
+                <p className="no-spec-message">아직 작성된 정보가 없습니다.</p>
+                <button className="create-spec-btn" onClick={handleCreateSpec}>
+                  작성하기
+                </button>
+              </div>
+            ) : (
+              <div className="spec-items-list">
+                <div className="total-career">
+                  <strong>총 경력:</strong> {calculateTotalCareer()}
                 </div>
-              ) : (
-                <div className="spec-items-list">
-                  <div className="total-career">
-                    <strong>총 경력:</strong> {calculateTotalCareer()}
-                  </div>
-                  <button className="edit-btn" onClick={handleEditSpec}>
-                    스펙 수정
-                  </button>
-                </div>
-              )}
-            </div>
+                <button className="edit-btn" onClick={handleEditSpec}>
+                  스펙 수정
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

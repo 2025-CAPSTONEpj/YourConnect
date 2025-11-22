@@ -7,6 +7,36 @@
 	<link rel="stylesheet" href="headhunting.css">
 </head>
 <body>
+	<!-- 헤더 -->
+	<header class="header-main">
+		<nav class="nav-container">
+			<!-- 로고 클릭 시 메인 페이지로 이동 -->
+			<div class="logo-area">
+				<a href="home.html">
+					<img src="yclogo.png" alt="CareerBuddy 로고" class="logo-img" />
+				</a>
+			</div>
+			<!-- 메뉴 -->
+			<div class="menu-category-group">
+				<a href="index.html" class="menu-item hover-purple">
+					맞춤형 커리어 디자인🖥️
+				</a>
+				<a href="mentoring.html" class="menu-item hover-purple">
+					멘토링🤝🏼
+				</a>
+				<a href="headhunting.html" class="menu-item hover-purple">
+					헤드 헌팅🏢
+				</a>
+			</div>
+		<!-- 로그아웃 -->
+		<div class="auth-group">
+			<a href="login.html" class="btn btn-secondary">로그아웃</a>
+		</div>
+		</nav>
+	</header>
+
+	<!-- 상단 우측 프로필 박스 제거 -->
+
 	<!-- 메인 -->
   <main class="headhunt-layout">
       <aside class="headhunt-sidebar">
@@ -14,7 +44,7 @@
 			<img class="profile-img" src="https://www.gravatar.com/avatar/?d=mp&s=100" alt="기본 프로필 이미지">
       <div class="profile-info">
         <h3>이가윤님</h3>
-	<p><a href="profile.html" class="profile-edit">회원정보 수정 ⚙️</a></p>
+	<p><a href="profile.html">회원정보 수정 ⚙️</a></p>
       </div>
     </div>
 
@@ -46,9 +76,20 @@
 	</div>		<!-- 필터 -->
 		<section class="filter-section isolated">
 			<h3 class="filter-section-title">원하는 직무 선택</h3>
+
 			<div class="filter-group">
-				<label>직급 / 직책 (<span id="ranks-count">0</span>/3)</label>
+				<label>직급 (<span id="ranks-count">0</span>/3)</label>
 				<div class="grid" id="ranks-grid"></div>
+			</div>
+
+			<div class="filter-group">
+				<label>직무 (대분류)</label>
+				<div class="grid" id="headhunt-duty-grid"></div>
+			</div>
+
+			<div class="filter-group">
+				<label>세부 조건</label>
+				<div class="grid" id="headhunt-sub-duty-grid"></div>
 			</div>
 
 			<div class="filter-group">
@@ -56,15 +97,7 @@
 				<div class="grid" id="careers-grid"></div>
 			</div>
 
-		<div class="filter-group">
-			<label class="collapsible-label">
-				직무 (<span id="jobs-count">0</span>/5)
-				<button class="toggle-btn" type="button">
-					<span class="toggle-text">펼쳐보기</span>
-				</button>
-			</label>
-			<div class="grid collapsible-content collapsed" id="jobs-grid"></div>
-		</div>			<div class="filter-group">
+			<div class="filter-group">
 				<label>기업형태 (<span id="companies-count">0</span>/2)</label>
 				<div class="grid" id="companies-grid"></div>
 			</div>

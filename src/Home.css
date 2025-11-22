@@ -162,7 +162,7 @@
 /* 3단 레이아웃 */
 .two-column-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr 280px;
+  grid-template-columns: 1.5fr 0.5fr 280px;
   gap: 20px;
   margin-bottom: 40px;
   align-items: start;
@@ -178,20 +178,20 @@
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 28px;
+  padding: 20px;
   align-self: start;
 }
 
 .job-list-home {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .job-card-home {
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 20px;
+  padding: 14px;
   background: #fafafa;
   transition: all 0.3s;
 }
@@ -201,79 +201,86 @@
   transform: translateY(-1px);
 }
 
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
 .job-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
 }
 
 .company-name {
   font-weight: 700;
   color: #1a1a1a;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
 }
 
 .company-badge {
   background: #dbeafe;
   color: #1e40af;
-  padding: 3px 10px;
+  padding: 2px 8px;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 600;
 }
 
 .job-title {
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
   color: #1a1a1a;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .job-deadline {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #6b7280;
-  margin: 0 0 12px 0;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .job-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .job-tag {
   background: white;
   border: 1px solid #e5e7eb;
-  padding: 5px 12px;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #6b7280;
   font-weight: 500;
 }
 
 .job-detail {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #6b7280;
-  margin: 12px 0;
-  line-height: 1.5;
+  margin: 8px 0;
+  line-height: 1.4;
 }
 
 .job-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 16px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid #e5e7eb;
 }
 
 .bookmark-btn {
   background: none;
   border: none;
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   cursor: pointer;
   color: #d1d5db;
   transition: color 0.2s;
@@ -287,9 +294,9 @@
   background: #3b82f6;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 6px 14px;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -306,7 +313,7 @@
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 28px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   align-self: start;
@@ -315,13 +322,13 @@
 .qna-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .qna-card {
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 18px;
+  padding: 12px;
   background: #fafafa;
   transition: all 0.3s;
   cursor: pointer;
@@ -335,9 +342,9 @@
 .qna-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 0.85rem;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 0.7rem;
 }
 
 .qna-category {
@@ -355,11 +362,11 @@
 }
 
 .qna-title {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
   color: #1a1a1a;
-  line-height: 1.5;
+  line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -368,12 +375,12 @@
 .qna-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 5px;
 }
 
 .qna-tag {
   color: #3b82f6;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 500;
 }
 

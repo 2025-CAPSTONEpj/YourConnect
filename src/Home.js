@@ -63,7 +63,7 @@ function Home() {
       company: "유한대",
       badge: "유명기업",
       title: "보령 대기업 IT 디지털 기획 과장, 차장급 구함 (국가리언)",
-      deadline: "1월 오늘까지 - 12/20(월)",
+      deadline: "11월 10(금) - 12/20(월)",
       tags: ["대졸이상", "통신업", "경력5년", "통신관리", "소프트웨어"],
       detail: "경력 기간 이상 · 대졸 이상 · 서울 > 송파구"
     },
@@ -71,7 +71,7 @@ function Home() {
       company: "안마영",
       badge: "다양한그룹 외주 기업 개발자 모집 인원",
       title: "[대전/2개월/유성] 대기업 솔루션 연계 프로젝트 개발자 고급 모집",
-      deadline: "1월 오늘까지 - 10/30(월)",
+      deadline: "9/23(월) - 10/30(월)",
       tags: ["서류전형", "면접전형", "시험면접", "인적성검사"],
       detail: "임금/복지/4대보험 경력 10년 이상 - 학력무관 - 서울 > 송파구"
     }
@@ -150,7 +150,7 @@ function Home() {
         <div className="two-column-layout">
           <section className="section-job-postings">
             <div className="section-header">
-              <h2>지금 가장 주목받는 공고에요!</h2>
+              <h3>지금 가장 주목받는 공고에요!</h3>
               <button 
                 className="more-link"
                 onClick={() => navigate('/headhunting')}
@@ -162,12 +162,14 @@ function Home() {
             <div className="job-list-home">
               {jobPostings.map((job, index) => (
                 <div key={index} className="job-card-home">
-                  <div className="job-header">
-                    <span className="company-name">{job.company}</span>
-                    <span className="company-badge">{job.badge}</span>
+                  <div className="job-card-top">
+                    <div className="job-header">
+                      <span className="company-name">{job.company}</span>
+                      <span className="company-badge">{job.badge}</span>
+                    </div>
+                    <p className="job-deadline">{job.deadline}</p>
                   </div>
                   <h3 className="job-title">{job.title}</h3>
-                  <p className="job-deadline">{job.deadline}</p>
                   <div className="job-tags">
                     {job.tags.map((tag, idx) => (
                       <span key={idx} className="job-tag">{tag}</span>
@@ -186,7 +188,7 @@ function Home() {
           {/* 인기 있는 질문 */}
           <section className="section-qna">
             <div className="section-header">
-              <h2>인기 있는 질문</h2>
+              <h3>인기 있는 질문</h3>
               <button 
                 className="more-link"
                 onClick={() => navigate('/community')}

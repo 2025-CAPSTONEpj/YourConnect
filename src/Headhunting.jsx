@@ -14,6 +14,10 @@ function Headhunting() {
     itemsPerPage: 9
   });
 
+  const [specs, setSpecs] = useState([]);
+  const [expandedSpecs, setExpandedSpecs] = useState({});
+  const [selectedMainJob, setSelectedMainJob] = useState(null);
+
   const data = {
     ranks: [
       "과장·차장급", "부장급", "팀장/매니저/실장", "파트장/그룹장",
@@ -74,6 +78,40 @@ function Headhunting() {
   const [collapsedJobs, setCollapsedJobs] = useState(true);
   const [visibleCards, setVisibleCards] = useState(jobPostings);
   const [totalCount, setTotalCount] = useState(jobPostings.length);
+
+  useEffect(() => {
+    // Load specs from localStorage
+    const loadSpecs = () => {
+      const savedSpecs = localStorage.getItem('userSpecs');
+      if (savedSpecs) {
+        try {
+          const parsed = JSON.parse(savedSpecs);
+          const specsArray = Array.isArray(parsed) ? parsed : [parsed];
+          setSpecs(specsArray);
+        } catch (e) {
+          console.error('스펙 로드 오류:', e);
+          setSpecs([]);
+        }
+      } else {
+        setSpecs([]);
+      }
+    };
+    
+    loadSpecs();
+    
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      loadSpecs();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('pageshow', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('pageshow', handleStorageChange);
+    };
+  }, []);
 
   const getJobParent = (job) => {
     for (const [parent, children] of Object.entries(jobHierarchy)) {
@@ -243,6 +281,68 @@ function Headhunting() {
     }));
   };
 
+  const toggleSpecExpand = (specId) => {
+    setExpandedSpecs(prev => ({
+      ...prev,
+      [specId]: !prev[specId]
+    }));
+  };
+
+  const handleSelectSpec = (spec) => {
+    // 스펙 정보를 기반으로 필터 자동 선택
+    const newState = { ...state };
+    
+    // 직급 선택
+    if (spec.position) {
+      const matchingRanks = data.ranks.filter(rank => 
+        rank.includes(spec.position) || spec.position.includes(rank.split('/')[0])
+      );
+      if (matchingRanks.length > 0 && !newState.selectedRanks.includes(matchingRanks[0])) {
+        if (newState.selectedRanks.length < 3) {
+          newState.selectedRanks = [...newState.selectedRanks, matchingRanks[0]];
+        }
+      }
+    }
+    
+    // 직무 선택
+    if (spec.duty) {
+      // 대분류 직무 찾기
+      const matchingJobs = data.jobs.filter(job => 
+        job && (job === spec.duty || job.includes(spec.duty))
+      );
+      if (matchingJobs.length > 0 && !newState.selectedJobs.includes(matchingJobs[0])) {
+        if (newState.selectedJobs.length < 5) {
+          newState.selectedJobs = [...newState.selectedJobs, matchingJobs[0]];
+        }
+      }
+    }
+    
+    // 기업형태 선택
+    if (spec.companyType && data.companies.includes(spec.companyType)) {
+      if (!newState.selectedCompanies.includes(spec.companyType)) {
+        if (newState.selectedCompanies.length < 2) {
+          newState.selectedCompanies = [...newState.selectedCompanies, spec.companyType];
+        }
+      }
+    }
+    
+    // 지역 선택
+    if (spec.region && data.regions.includes(spec.region)) {
+      if (!newState.selectedRegions.includes(spec.region)) {
+        if (newState.selectedRegions.length < 2) {
+          newState.selectedRegions = [...newState.selectedRegions, spec.region];
+        }
+      }
+    }
+    
+    setState(newState);
+    alert('해당 스펙의 조건이 자동 선택되었습니다.');
+  };
+
+  const handleEditSpec = () => {
+    window.location.href = '/spec';
+  };
+
   return (
     <main className="headhunt-layout">
       <aside className="headhunt-sidebar">
@@ -273,32 +373,140 @@ function Headhunting() {
 
       <div className="headhunt-content">
         <h2>헤드헌팅 채용 정보</h2>
-        {/* 보유 스펙 박스 추가 */}
-        <section className="spec-box" style={{margin: '32px 0 24px 0', padding: '32px 0', background: '#fafafa', borderRadius: '12px', textAlign: 'center'}}>
-          <h3 style={{fontSize: '1.3rem', fontWeight: '700', marginBottom: '16px'}}>보유 스펙</h3>
-          <p style={{color: '#666', fontSize: '1.08rem'}}>저장된 스펙이 없습니다.</p>
-        </section>
+        
+        {/* 보유 스펙 박스 */}
+        <div className="spec-summary-section">
+          <h3>보유 스펙</h3>
+          <div id="specBoxesContainer">
+            {specs.length === 0 ? (
+              <p style={{color: '#666', fontSize: '0.95rem'}}>저장된 스펙이 없습니다.</p>
+            ) : (
+              <div className="spec-boxes">
+                {specs.map((spec, index) => {
+                  const isExpanded = expandedSpecs[spec.id];
+                  return (
+                    <div key={spec.id || index} className="spec-box-collapsible">
+                      <div 
+                        className="spec-box-header-clickable" 
+                        onClick={() => toggleSpecExpand(spec.id)}
+                      >
+                        <div className="spec-box-title">
+                          <strong>{spec.companyName || '회사명 없음'}</strong>
+                          {!isExpanded && (
+                            <span className="spec-box-company-preview">
+                              {spec.duty && ` - ${spec.duty}`}
+                              {spec.subDuty && ` > ${spec.subDuty}`}
+                            </span>
+                          )}
+                        </div>
+                        <span className="toggle-icon">{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                      
+                      {isExpanded && (
+                        <div className="spec-box-content">
+                          <div className="spec-box-details-grid">
+                            <div className="spec-detail-row">
+                              <span className="spec-label">직무:</span>
+                              <span className="spec-value">{spec.duty || '-'}</span>
+                            </div>
+                            <div className="spec-detail-row">
+                              <span className="spec-label">세부직무:</span>
+                              <span className="spec-value">{spec.subDuty || '-'}</span>
+                            </div>
+                            <div className="spec-detail-row">
+                              <span className="spec-label">회사명:</span>
+                              <span className="spec-value">{spec.companyName || '-'}</span>
+                            </div>
+                            <div className="spec-detail-row">
+                              <span className="spec-label">경력:</span>
+                              <span className="spec-value">{spec.career || '-'}</span>
+                            </div>
+                            <div className="spec-detail-row">
+                              <span className="spec-label">직급:</span>
+                              <span className="spec-value">{spec.position || '-'}</span>
+                            </div>
+                            <div className="spec-detail-row">
+                              <span className="spec-label">기업형태:</span>
+                              <span className="spec-value">{spec.companyType || '-'}</span>
+                            </div>
+                            <div className="spec-detail-row">
+                              <span className="spec-label">근무지역:</span>
+                              <span className="spec-value">{spec.region || '-'}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="spec-box-actions">
+                            <button className="spec-edit-btn" onClick={handleEditSpec}>
+                              수정
+                            </button>
+                            <button className="spec-select-btn" onClick={() => handleSelectSpec(spec)}>
+                              선택
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+        
         <section className="filter-section isolated">
           <h3 className="filter-section-title">원하는 직무 선택</h3>
 
           <div className="filter-group">
-            <label>직급 / 직책 ({state.selectedRanks.length}/3)</label>
+            <label>직급 ({state.selectedRanks.length}/3)</label>
             <div className="grid">{renderButtons('ranks')}</div>
+          </div>
+
+          <div className="filter-group">
+            <label>직무 (대분류)</label>
+            <div className="grid" id="headhunt-duty-grid">
+              {Object.keys(jobHierarchy).map(mainJob => (
+                <button
+                  key={mainJob}
+                  className={selectedMainJob === mainJob ? 'selected' : ''}
+                  onClick={() => setSelectedMainJob(selectedMainJob === mainJob ? null : mainJob)}
+                >
+                  {mainJob}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <label>세부 조건</label>
+            <div className="grid" id="headhunt-sub-duty-grid">
+              {selectedMainJob ? (
+                jobHierarchy[selectedMainJob].map(subJob => {
+                  const isSelected = state.selectedJobs.includes(subJob);
+                  const atMax = state.selectedJobs.length >= 5;
+                  const disabled = !isSelected && atMax;
+                  
+                  return (
+                    <button
+                      key={subJob}
+                      className={`${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}
+                      disabled={disabled}
+                      onClick={() => toggleSelect('jobs', subJob)}
+                    >
+                      {subJob}
+                    </button>
+                  );
+                })
+              ) : (
+                <p style={{color: '#9ca3af', fontSize: '0.95rem', padding: '12px'}}>
+                  대분류 직무를 선택하면 세부 조건을 선택할 수 있습니다.
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="filter-group">
             <label>경력 ({state.selectedCareers.length}/1)</label>
             <div className="grid">{renderButtons('careers')}</div>
-          </div>
-
-          <div className="filter-group">
-            <label className="collapsible-label">
-              직무 ({state.selectedJobs.length}/5)
-              <button className="toggle-btn" type="button" onClick={() => setCollapsedJobs(!collapsedJobs)}>
-                <span className="toggle-text">{collapsedJobs ? '펼쳐보기' : '접기'}</span>
-              </button>
-            </label>
-            <div className={`grid collapsible-content ${collapsedJobs ? 'collapsed' : ''}`}>{renderButtons('jobs')}</div>
           </div>
 
           <div className="filter-group">

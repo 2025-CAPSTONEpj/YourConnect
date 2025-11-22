@@ -1,5 +1,9 @@
 // State management for all selectable grids
 const state = {
+    // 직무 (스펙과 동일 구조)
+    selectedDuty: null,
+    selectedSubDuty: null,
+    // 기존 헤드헌팅 필터 상태
     selectedRanks: [],
     selectedCareers: [],
     selectedJobs: [],
@@ -12,10 +16,18 @@ const state = {
 
 // Data for all grids
 const data = {
-    ranks: [
-        "과장·차장급", "부장급", "팀장/매니저/실장", "파트장/그룹장",
-        "임원/CEO", "주임·대리급", "본부장/센터장", "인턴"
-    ],
+    // 스펙 페이지와 동일한 직무 대분류/세부조건
+    duties: ["개발", "데이터", "인프라/플랫폼/Devops", "기획", "디자인", "QA/테스트"],
+    subDuties: {
+        "개발": ["FE", "BE", "APP"],
+        "데이터": ["데이터 분석가", "데이터 엔지니어", "머신러닝 엔지니어"],
+        "인프라/플랫폼/Devops": ["Devops", "클라우드", "보안"],
+        "기획": ["서비스 기획", "PO", "PM"],
+        "디자인": ["UIUX", "BX", "그래픽 디자이너", "모션 디자이너"],
+        "QA/테스트": ["QA", "테스트 엔지니어"]
+    },
+    // 직급은 스펙 페이지와 동일한 메뉴로 사용
+    ranks: ["사원", "주임", "대리", "과장", "차장", "부장", "임원"],
     careers: ["1년~3년", "3년~5년", "5년~7년", "7년~10년", "10년~15년", "15년~"],
     jobs: [
         // 개발자 그룹
@@ -125,6 +137,8 @@ function getMaxSelection(category) {
 
 // DOM elements
 const elements = {
+    headhuntDutyGrid: document.getElementById('headhunt-duty-grid'),
+    headhuntSubDutyGrid: document.getElementById('headhunt-sub-duty-grid'),
     ranksGrid: document.getElementById('ranks-grid'),
     careersGrid: document.getElementById('careers-grid'),
     jobsGrid: document.getElementById('jobs-grid'),
@@ -142,11 +156,43 @@ const elements = {
 
 // Render buttons for a category
 function renderButtons(category) {
-    const gridElement = elements[`${category}Grid`];
-    if (!gridElement) return;
+    // 직무 대분류/세부조건은 요소 id가 headhunt-duty-grid / headhunt-sub-duty-grid 이므로 직접 매핑
+    let gridElement;
+    if (category === 'duties') {
+        gridElement = elements.headhuntDutyGrid;
+    } else if (category === 'subDuties') {
+        gridElement = elements.headhuntSubDutyGrid;
+    } else {
+        gridElement = elements[`${category}Grid`];
+    }
+    if (!gridElement) return; // 요소 없으면 중단
 
     const items = data[category];
     const capitalized = category.charAt(0).toUpperCase() + category.slice(1);
+
+    // 직무(대분류/세부)일 경우 별도 처리
+    if (category === 'duties') {
+        const selected = state.selectedDuty;
+        gridElement.innerHTML = items.map(item => `
+            <button type="button" class="${selected === item ? 'selected' : ''}" data-value="${item}">
+                ${item}
+            </button>
+        `).join('');
+        return;
+    }
+
+    if (category === 'subDuties') {
+        const duty = state.selectedDuty;
+        const subList = duty ? data.subDuties[duty] || [] : [];
+        const selected = state.selectedSubDuty;
+        gridElement.innerHTML = subList.map(sub => `
+            <button type="button" class="${selected === sub ? 'selected' : ''}" data-value="${sub}">
+                ${sub}
+            </button>
+        `).join('');
+        return;
+    }
+
     const selectedItems = state[`selected${capitalized}`];
     const max = getMaxSelection(category);
     const atMax = selectedItems.length >= max;
@@ -250,7 +296,8 @@ function updateSelectedSummary() {
 
 // Initialize all grids
 document.addEventListener('DOMContentLoaded', () => {
-    ['ranks', 'careers', 'jobs', 'companies', 'regions'].forEach(category => {
+    // 최초 로드시 직무 대분류/세부조건도 함께 렌더링
+    ['duties', 'subDuties', 'ranks', 'careers', 'jobs', 'companies', 'regions'].forEach(category => {
         renderButtons(category);
     });
     updateCounters();
@@ -323,6 +370,26 @@ document.addEventListener('click', (e) => {
     if (!grid || !grid.id.endsWith('-grid')) return;
     const category = grid.id.replace('-grid', '');
     const value = btn.dataset.value || btn.textContent.trim();
+
+    // 헤드헌팅 직무(대분류/세부) 처리
+    if (category === 'headhunt-duty') {
+        state.selectedDuty = (state.selectedDuty === value) ? null : value;
+        state.selectedSubDuty = null;
+        renderButtons('duties');
+        renderButtons('subDuties');
+        updateSelectedSummary();
+        // 직무는 아직 필터 조건에는 직접 쓰지 않으므로 여기서 종료
+        return;
+    }
+
+    if (category === 'headhunt-sub-duty') {
+        state.selectedSubDuty = (state.selectedSubDuty === value) ? null : value;
+        renderButtons('subDuties');
+        updateSelectedSummary();
+        // 필요 시, selectedJobs와 연동하는 로직을 나중에 추가 가능
+        return;
+    }
+
     toggleSelect(category, value);
 });
 
@@ -939,7 +1006,12 @@ function loadAndDisplaySpecs() {
         let html = '';
         specsArray.forEach((spec, index) => {
             const companyName = spec.companyName || '회사명 없음';
-            const career = spec.careers && spec.careers[0] ? spec.careers[0] : '경력 없음';
+            const career = spec.career || '경력 없음';
+            const duty = spec.duty || '직무 없음';
+            const subDuty = spec.subDuty || '';
+            const position = spec.position || '';
+            const companyType = spec.companyType || '';
+            const region = spec.region || '';
             const savedDate = spec.savedAt ? new Date(spec.savedAt).toLocaleDateString('ko-KR') : '';
             
             html += `
@@ -947,41 +1019,41 @@ function loadAndDisplaySpecs() {
                     <div class="headhunt-spec-header" onclick="toggleHeadhuntSpec('headhunt-spec-${spec.id}')">
                         <div class="headhunt-spec-info">
                             <span class="preview-company">${companyName}</span>
-                            <span class="preview-career">${career}</span>
+                            <span class="preview-career">${duty}${subDuty ? ' > ' + subDuty : ''}</span>
                             ${savedDate ? `<span class="preview-modified">${savedDate}</span>` : ''}
                         </div>
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div id="headhunt-spec-${spec.id}" class="headhunt-spec-content collapsed">
                         <div class="spec-section">
-                            ${spec.ranks && spec.ranks.length > 0 ? `
+                            ${duty ? `
                                 <div class="spec-item">
-                                    <strong>직급:</strong> ${spec.ranks.join(', ')}
+                                    <strong>직무:</strong> ${duty}${subDuty ? ' > ' + subDuty : ''}
                                 </div>
                             ` : ''}
-                            ${spec.careers && spec.careers.length > 0 ? `
+                            ${companyName && companyName !== '회사명 없음' ? `
                                 <div class="spec-item">
-                                    <strong>경력:</strong> ${spec.careers.join(', ')}
+                                    <strong>회사명:</strong> ${companyName}
                                 </div>
                             ` : ''}
-                            ${spec.jobs && spec.jobs.length > 0 ? `
+                            ${career && career !== '경력 없음' ? `
                                 <div class="spec-item">
-                                    <strong>직무:</strong> ${spec.jobs.join(', ')}
+                                    <strong>경력:</strong> ${career}
                                 </div>
                             ` : ''}
-                            ${spec.companies && spec.companies.length > 0 ? `
+                            ${position ? `
                                 <div class="spec-item">
-                                    <strong>기업형태:</strong> ${spec.companies.join(', ')}
+                                    <strong>직급:</strong> ${position}
                                 </div>
                             ` : ''}
-                            ${spec.regions && spec.regions.length > 0 ? `
+                            ${companyType ? `
                                 <div class="spec-item">
-                                    <strong>지역:</strong> ${spec.regions.join(', ')}
+                                    <strong>기업 형태:</strong> ${companyType}
                                 </div>
                             ` : ''}
-                            ${spec.companyName ? `
+                            ${region ? `
                                 <div class="spec-item">
-                                    <strong>회사명:</strong> ${spec.companyName}
+                                    <strong>근무지역:</strong> ${region}
                                 </div>
                             ` : ''}
                         </div>
@@ -1028,39 +1100,70 @@ function selectSpecForSearch(specId) {
         const spec = specsArray.find(s => s.id === specId);
         if (!spec) return;
         
-        // 스펙 조건을 키워드로 변환
-        const keywords = [];
-        
-        // 직군 추가
-        if (spec.jobs && spec.jobs.length > 0) {
-            keywords.push(...spec.jobs);
+        // 기존 선택 상태 초기화
+        state.selectedRanks = [];
+        state.selectedCareers = [];
+        state.selectedJobs = [];
+        state.selectedCompanies = [];
+        state.selectedRegions = [];
+        state.searchKeyword = '';
+
+        // 스펙 구조: spec.position, spec.career, spec.companyType, spec.region
+
+        // 1) 직급 → ranks 그리드에 매핑
+        if (spec.position) {
+            // headhunting 데이터의 ranks 값과 spec.position(사원/주임/대리/과장/차장/부장/임원)을
+            // 최대한 자연스럽게 매칭 (텍스트에 해당 단어가 포함되면 선택)
+            data.ranks.forEach(rankLabel => {
+                if (rankLabel.includes(spec.position)) {
+                    state.selectedRanks.push(rankLabel);
+                }
+            });
         }
-        
-        // 회사명 추가
-        if (spec.companyName) {
-            keywords.push(spec.companyName);
+
+        // 2) 경력 → careers 그리드에 매핑
+        if (spec.career && spec.career !== '경력 없음') {
+            // spec.career 예: "3년 5개월", "4년", "8개월"
+            const yearMatch = spec.career.match(/(\d+)년/);
+            const years = yearMatch ? parseInt(yearMatch[1]) : 0;
+
+            // headhunting의 careers 범위 중 최소 연차 기준으로 하나 선택
+            // ["1년~3년", "3년~5년", "5년~7년", "7년~10년", "10년~15년", "15년~"]
+            let careerLabel = null;
+            if (years > 0) {
+                if (years <= 3) careerLabel = '1년~3년';
+                else if (years <= 5) careerLabel = '3년~5년';
+                else if (years <= 7) careerLabel = '5년~7년';
+                else if (years <= 10) careerLabel = '7년~10년';
+                else if (years <= 15) careerLabel = '10년~15년';
+                else careerLabel = '15년~';
+            }
+
+            if (careerLabel && data.careers.includes(careerLabel)) {
+                state.selectedCareers = [careerLabel];
+            }
         }
-        
-        // 지역 추가
-        if (spec.regions && spec.regions.length > 0) {
-            keywords.push(...spec.regions);
+
+        // 3) 기업 형태 → companies 그리드에 매핑
+        if (spec.companyType && data.companies.includes(spec.companyType)) {
+            state.selectedCompanies = [spec.companyType];
         }
-        
-        // 기업형태 추가
-        if (spec.companies && spec.companies.length > 0) {
-            keywords.push(...spec.companies);
+
+        // 4) 근무지역 → regions 그리드에 매핑
+        if (spec.region && data.regions.includes(spec.region)) {
+            state.selectedRegions = [spec.region];
         }
+
+        // 그리드/카운트/요약 UI 다시 그림
+        ['ranks', 'careers', 'jobs', 'companies', 'regions'].forEach(category => {
+            renderButtons(category);
+        });
+        updateCounters();
+        updateSelectedSummary();
         
-        // 키워드를 검색창에 표시
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.value = keywords.join(' ');
-            
-            // 검색 실행
-            state.searchKeyword = keywords.join(' ');
-            state.currentPage = 1;
-            filterJobCards();
-        }
+        // 필터 적용 (선택한 스펙 조건으로 공고 필터링)
+        state.currentPage = 1;
+        filterJobCardsByConditions();
         
     } catch (e) {
         console.error('스펙 선택 오류:', e);
@@ -1440,4 +1543,3 @@ function checkRegionMatch(jobInfo, specRegion) {
     const regionText = regionMatch[1].trim();
     return regionText.includes(specRegion);
 }
-

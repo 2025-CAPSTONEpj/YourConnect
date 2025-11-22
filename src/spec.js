@@ -1,96 +1,47 @@
 // 상태 관리
 const state = {
-    selectedRanks: [],
-    selectedJobs: [],
-    selectedCompanies: [],
-    selectedRegions: [],
+    selectedDuties: [],
+    selectedSubDuty: null,
+    selectedPosition: null,
+    selectedCompanyType: null,
+    selectedRegion: null,
+    careerYears: '',
+    careerMonths: '',
+    specCompanyName: '',
     editingSpecId: null // 수정 중인 스펙 ID
 };
 
 // 데이터
 const data = {
-    ranks: [
-        "과장·차장급", "부장급", "팀장/매니저/실장", "파트장/그룹장",
-        "임원/CEO", "주임·대리급", "본부장/센터장", "인턴"
-    ],
-    jobs: [
-        // 개발자 그룹
-        "개발자",
-        "FE (프론트엔드)",
-        "BE (백엔드)",
-        "App (모바일 앱 개발)",
-        "Data Engineer/Data Scientist",
-        "",
-        // 개발자 상세 그룹
-        "DevOps (시스템 운영/배포 엔지니어)",
-        "",
-        // 기획자 그룹
-        "PM/PO/기획자",
-        "서비스 기획",
-        "PO (프로덕트 오너)",
-        "PM (프로젝트/프로덕트 매니저)",
-        "",
-        // 디자이너 그룹
-        "UI/UX",
-        "BX (브랜드 경험 디자이너)",
-        "그래픽 디자이너",
-        "모션 디자이너",
-        "",
-        // 데이터 그룹
-        "데이터 분석가",
-        "데이터 엔지니어",
-        "머신러닝 엔지니어",
-        "",
-        // 인프라 그룹
-        "인프라/클라우드",
-        "클라우드",
-        "보안",
-        "",
-        // QA 그룹
-        "QA/테스터",
-        "QA 테스트 엔지니어",
-        "",
-        // 마케터 그룹
-        "마케터",
-        "콘텐츠",
-        "브랜드",
-        "성장 마케터",
-        "",
-        // 경영/운영 그룹
-        "경영/운영",
-        "사업전략",
-        "운영 매니저",
-        "",
-        // HR 그룹
-        "HR/리크루터",
-        "HR 매니저",
-        "리크루터"
-    ],
-    companies: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"],
+    duties: ["개발", "데이터", "인프라/플랫폼/Devops", "기획", "디자인", "QA/테스트"],
     regions: [
         "서울", "경기", "인천", "대전", "세종", "충남", "충북", "광주",
         "전남", "전북", "대구", "경북", "부산", "울산", "경남", "강원", "제주"
-    ]
+    ],
+    subDuties: {
+        "개발": ["FE", "BE", "APP"],
+        "데이터": ["데이터 분석가", "데이터 엔지니어", "머신러닝 엔지니어"],
+        "인프라/플랫폼/Devops": ["Devops", "클라우드", "보안"],
+        "기획": ["서비스 기획", "PO", "PM"],
+        "디자인": ["UIUX", "BX", "그래픽 디자이너", "모션 디자이너"],
+        "QA/테스트": ["QA", "테스트 엔지니어"]
+    },
+    positions: ["사원", "주임", "대리", "과장", "차장", "부장", "임원"],
+    companyTypes: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"]
 };
 
 // DOM 요소
-const elements = {
-    ranksGrid: document.getElementById('ranks-grid'),
-    careerYears: document.getElementById('careerYears'),
-    careerMonths: document.getElementById('careerMonths'),
-    jobsGrid: document.getElementById('jobs-grid'),
-    companiesGrid: document.getElementById('companies-grid'),
-    regionsGrid: document.getElementById('regions-grid'),
-    companiesCount: document.getElementById('companies-count'),
-    regionsCount: document.getElementById('regions-count'),
-    jobsCount: document.getElementById('jobs-count'),
-    saveButton: document.getElementById('save-button'),
-    companyNameInput: document.getElementById('companyNameInput'),
-    companyNameConfirmBtn: document.getElementById('companyNameConfirmBtn'),
-    companyNameDisplay: document.getElementById('companyNameDisplay'),
-    careerConfirmBtn: document.getElementById('careerConfirmBtn'),
-    careerDisplay: document.getElementById('careerDisplay')
-};
+let elements = {};
+
+function initializeElements() {
+    elements = {
+        dutyGrid: document.getElementById('duty-grid'),
+        detailBox: document.getElementById('detail-box'),
+        subDutyGrid: document.getElementById('sub-duty-grid'),
+        additionalBox: document.getElementById('additional-box'),
+        saveButton: document.getElementById('save-button')
+    };
+}
 
 // 토글 선택 함수
 function toggleSelect(item, category, max = null) {
@@ -100,8 +51,16 @@ function toggleSelect(item, category, max = null) {
     // 단일 선택 모드: 이미 선택된 항목 클릭 시 해제, 다른 항목 클릭 시 교체
     if (selectedItems.includes(item)) {
         state[key] = [];
+        if (category === 'Duties') {
+            state.selectedSubDuty = null;
+            hideDetailBox();
+        }
     } else {
         state[key] = [item];
+        if (category === 'Duties') {
+            state.selectedSubDuty = null;
+            showDetailBox(item);
+        }
     }
 
     // UI 업데이트
@@ -109,9 +68,149 @@ function toggleSelect(item, category, max = null) {
     updateCounters();
 }
 
+// 세부 조건 박스 표시
+function showDetailBox(duty) {
+    if (!elements.detailBox || !elements.subDutyGrid) return;
+    
+    const subDuties = data.subDuties[duty];
+    if (!subDuties) return;
+    
+    elements.detailBox.style.display = 'block';
+    elements.subDutyGrid.innerHTML = subDuties.map(subDuty => `
+        <button 
+            class="${state.selectedSubDuty === subDuty ? 'selected' : ''}"
+            onclick="selectSubDuty('${subDuty}')"
+        >
+            ${subDuty}
+        </button>
+    `).join('');
+}
+
+// 세부 조건 박스 숨기기
+function hideDetailBox() {
+    if (!elements.detailBox || !elements.subDutyGrid) return;
+    elements.detailBox.style.display = 'none';
+    elements.subDutyGrid.innerHTML = '';
+}
+
+// 세부 직무 선택
+function selectSubDuty(subDuty) {
+    if (state.selectedSubDuty === subDuty) {
+        state.selectedSubDuty = null;
+        hideAdditionalBox();
+    } else {
+        state.selectedSubDuty = subDuty;
+        showAdditionalBox();
+    }
+    
+    // 선택된 주 직무 가져오기
+    const mainDuty = state.selectedDuties[0];
+    if (mainDuty) {
+        showDetailBox(mainDuty);
+    }
+}
+
+// 추가 정보 박스 표시
+function showAdditionalBox() {
+    if (!elements.additionalBox) return;
+    
+    elements.additionalBox.style.display = 'block';
+    
+    // 직급 버튼 렌더링
+    renderSelectionButtons('positions', 'position-grid', 'Position');
+    
+    // 기업 형태 버튼 렌더링
+    renderSelectionButtons('companyTypes', 'company-type-grid', 'CompanyType');
+    
+    // 근무지역 버튼 렌더링
+    renderSelectionButtons('regions', 'region-grid', 'Region');
+    
+    // 회사명 입력 이벤트
+    const specCompanyNameBtn = document.getElementById('specCompanyNameBtn');
+    if (specCompanyNameBtn) {
+        specCompanyNameBtn.onclick = () => {
+            const input = document.getElementById('specCompanyNameInput');
+            if (input && input.value.trim()) {
+                state.specCompanyName = input.value.trim();
+            }
+        };
+    }
+    
+    // 경력 입력 이벤트
+    const careerYearsInput = document.getElementById('careerYears');
+    const careerMonthsInput = document.getElementById('careerMonths');
+    if (careerYearsInput) {
+        careerYearsInput.oninput = (e) => {
+            state.careerYears = e.target.value;
+        };
+    }
+    if (careerMonthsInput) {
+        careerMonthsInput.oninput = (e) => {
+            state.careerMonths = e.target.value;
+        };
+    }
+}
+
+// 추가 정보 박스 숨기기
+function hideAdditionalBox() {
+    if (!elements.additionalBox) return;
+    elements.additionalBox.style.display = 'none';
+}
+
+// 선택 버튼 렌더링 (직급, 기업형태, 근무지역)
+function renderSelectionButtons(dataKey, gridId, stateKey) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    const items = data[dataKey];
+    const selectedItem = state[`selected${stateKey}`];
+    
+    grid.innerHTML = items.map(item => `
+        <button
+            class="${selectedItem === item ? 'selected' : ''}"
+            onclick="selectItem('${item}', '${stateKey}')"
+        >
+            ${item}
+        </button>
+    `).join('');
+}
+
+// 아이템 선택 (직급, 기업형태, 근무지역)
+function selectItem(item, stateKey) {
+    const fullKey = `selected${stateKey}`;
+    
+    if (state[fullKey] === item) {
+        state[fullKey] = null;
+    } else {
+        state[fullKey] = item;
+    }
+    
+    // 해당 그리드만 다시 렌더링
+    const gridMap = {
+        'Position': 'position-grid',
+        'CompanyType': 'company-type-grid',
+        'Region': 'region-grid'
+    };
+    
+    const dataMap = {
+        'Position': 'positions',
+        'CompanyType': 'companyTypes',
+        'Region': 'regions'
+    };
+    
+    renderSelectionButtons(dataMap[stateKey], gridMap[stateKey], stateKey);
+}
+
 // 버튼 렌더링 함수
 function renderButtons(category) {
-    const gridElement = elements[`${category}Grid`];
+    // category가 'duties'이면 'duty'로 변환
+    const gridKey = category === 'duties' ? 'duty' : category;
+    const gridElement = elements[`${gridKey}Grid`];
+    if (!gridElement) {
+        console.error(`Grid element not found for category: ${category}`);
+        return;
+    }
+    
     const items = data[category];
     const capitalized = category.charAt(0).toUpperCase() + category.slice(1);
     const selectedItems = state[`selected${capitalized}`];
@@ -141,6 +240,7 @@ function renderButtons(category) {
 // 최대 선택 개수 반환
 function getMaxSelection(category) {
     const maxSelections = {
+        duties: 3,
         ranks: 1,
         careers: 1,
         jobs: 1,
@@ -152,14 +252,12 @@ function getMaxSelection(category) {
 
 // 카운터 업데이트
 function updateCounters() {
-    if (elements.companiesCount) elements.companiesCount.textContent = state.selectedCompanies.length;
     if (elements.regionsCount) elements.regionsCount.textContent = state.selectedRegions.length;
-    if (elements.jobsCount) elements.jobsCount.textContent = state.selectedJobs.length;
 }
 
 // 모든 그리드 버튼 상태를 현재 선택된 값에 맞게 업데이트
 function updateAllGridButtons() {
-    ['ranks', 'jobs', 'companies', 'regions'].forEach(category => {
+    ['duties', 'regions'].forEach(category => {
         renderButtons(category);
     });
     updateCounters();
@@ -168,8 +266,10 @@ function updateAllGridButtons() {
 // 저장 버튼 이벤트 핸들러
 function handleSave() {
     // 경력 입력값 가져오기
-    const years = parseInt(elements.careerYears.value) || 0;
-    const months = parseInt(elements.careerMonths.value) || 0;
+    const careerYearsInput = document.getElementById('careerYears');
+    const careerMonthsInput = document.getElementById('careerMonths');
+    const years = parseInt(careerYearsInput?.value) || 0;
+    const months = parseInt(careerMonthsInput?.value) || 0;
     
     // 경력 문자열 생성
     let careerString = '';
@@ -183,15 +283,20 @@ function handleSave() {
         careerString = `${years}년 ${months}개월`;
     }
     
+    // 회사명 입력값 가져오기
+    const specCompanyNameInput = document.getElementById('specCompanyNameInput');
+    const companyName = specCompanyNameInput?.value?.trim() || '';
+    
     // 새 스펙 데이터 생성
     const newSpec = {
         id: state.editingSpecId || Date.now().toString(),
-        ranks: state.selectedRanks,
-        careers: [careerString],
-        jobs: state.selectedJobs,
-        companies: state.selectedCompanies,
-        regions: state.selectedRegions,
-        companyName: (elements.companyNameInput?.value || '').trim(),
+        duty: state.selectedDuties[0] || '',
+        subDuty: state.selectedSubDuty || '',
+        companyName: companyName,
+        career: careerString,
+        position: state.selectedPosition || '',
+        companyType: state.selectedCompanyType || '',
+        region: state.selectedRegion || '',
         savedAt: new Date().toISOString()
     };
     
@@ -221,29 +326,26 @@ function handleSave() {
     
     localStorage.setItem('userSpecs', JSON.stringify(specsArray));
     
-    // Show modal (same design as profile.html). On confirm, navigate to profile.html
+    // 모달 표시
     const modal = document.getElementById('saveModal');
     const okBtn = document.getElementById('modalOk');
     if (modal) {
         modal.setAttribute('aria-hidden', 'false');
-        modal.classList.add('open');
+        modal.style.display = 'flex';
 
-        // Ensure we don't register multiple handlers
         okBtn.onclick = function () {
-            modal.classList.remove('open');
+            modal.style.display = 'none';
             modal.setAttribute('aria-hidden', 'true');
-            // Navigate to profile page in same folder
             window.location.href = './profile.html';
         };
-    } else {
-        // Fallback: if modal is not present, use confirm as before
-        const ok = confirm("✅ 수정사항이 저장되었습니다!\n\n확인을 누르면 프로필 페이지로 이동합니다.");
-        if (ok) window.location.href = './profile.html';
     }
 }
 
 // 초기화 함수
 function initialize() {
+    // DOM 요소 초기화
+    initializeElements();
+    
     // localStorage에서 저장된 스펙 불러오기
     const savedSpecs = localStorage.getItem('userSpecs');
     let specsArray = [];
@@ -270,34 +372,13 @@ function initialize() {
     displayAllSpecs(specsArray);
     
     // 모든 그리드 렌더링
-    ['ranks', 'jobs', 'companies', 'regions'].forEach(category => {
-        renderButtons(category);
-    });
+    renderButtons('duties');
 
     // 회사명 확인 버튼 동작
     if (elements.companyNameConfirmBtn) {
         elements.companyNameConfirmBtn.addEventListener('click', () => {
             const name = (elements.companyNameInput?.value || '').trim();
             if (elements.companyNameDisplay) elements.companyNameDisplay.textContent = name || '';
-        });
-    }
-
-    // 경력 확인 버튼 동작
-    if (elements.careerConfirmBtn) {
-        elements.careerConfirmBtn.addEventListener('click', () => {
-            const years = parseInt(elements.careerYears.value) || 0;
-            const months = parseInt(elements.careerMonths.value) || 0;
-            let careerString = '';
-            if (years === 0 && months === 0) {
-                careerString = '';
-            } else if (years === 0) {
-                careerString = `${months}개월`;
-            } else if (months === 0) {
-                careerString = `${years}년`;
-            } else {
-                careerString = `${years}년 ${months}개월`;
-            }
-            if (elements.careerDisplay) elements.careerDisplay.textContent = careerString;
         });
     }
 
@@ -325,7 +406,12 @@ function displayAllSpecs(specsArray) {
     let html = '';
     specsArray.forEach((spec, index) => {
         const companyName = spec.companyName || '회사명 없음';
-        const career = spec.careers && spec.careers[0] ? spec.careers[0] : '경력 없음';
+        const career = spec.career || '경력 없음';
+        const duty = spec.duty || '직무 없음';
+        const subDuty = spec.subDuty || '';
+        const position = spec.position || '';
+        const companyType = spec.companyType || '';
+        const region = spec.region || '';
         const savedDate = spec.savedAt ? new Date(spec.savedAt).toLocaleDateString('ko-KR') : '';
         
         html += `
@@ -333,41 +419,41 @@ function displayAllSpecs(specsArray) {
                 <div class="spec-preview-header" onclick="toggleSpecContent('spec-${spec.id}')">
                     <div class="spec-preview-info">
                         <span class="preview-company">${companyName}</span>
-                        <span class="preview-career">${career}</span>
+                        <span class="preview-career">${duty}${subDuty ? ' > ' + subDuty : ''}</span>
                         ${savedDate ? `<span class="preview-modified">${savedDate}</span>` : ''}
                     </div>
                     <span class="toggle-icon">▼</span>
                 </div>
                 <div id="spec-${spec.id}" class="current-spec-content collapsed">
                     <div class="spec-section">
-                        ${spec.ranks && spec.ranks.length > 0 ? `
+                        ${duty ? `
                             <div class="spec-item">
-                                <strong>직급:</strong> ${spec.ranks.join(', ')}
+                                <strong>직무:</strong> ${duty}${subDuty ? ' > ' + subDuty : ''}
                             </div>
                         ` : ''}
-                        ${spec.careers && spec.careers.length > 0 ? `
+                        ${companyName && companyName !== '회사명 없음' ? `
                             <div class="spec-item">
-                                <strong>경력:</strong> ${spec.careers.join(', ')}
+                                <strong>회사명:</strong> ${companyName}
                             </div>
                         ` : ''}
-                        ${spec.jobs && spec.jobs.length > 0 ? `
+                        ${career && career !== '경력 없음' ? `
                             <div class="spec-item">
-                                <strong>직무:</strong> ${spec.jobs.join(', ')}
+                                <strong>경력:</strong> ${career}
                             </div>
                         ` : ''}
-                        ${spec.companies && spec.companies.length > 0 ? `
+                        ${position ? `
                             <div class="spec-item">
-                                <strong>기업형태:</strong> ${spec.companies.join(', ')}
+                                <strong>직급:</strong> ${position}
                             </div>
                         ` : ''}
-                        ${spec.regions && spec.regions.length > 0 ? `
+                        ${companyType ? `
                             <div class="spec-item">
-                                <strong>지역:</strong> ${spec.regions.join(', ')}
+                                <strong>기업 형태:</strong> ${companyType}
                             </div>
                         ` : ''}
-                        ${spec.companyName ? `
+                        ${region ? `
                             <div class="spec-item">
-                                <strong>회사명:</strong> ${spec.companyName}
+                                <strong>근무지역:</strong> ${region}
                             </div>
                         ` : ''}
                     </div>
@@ -424,38 +510,51 @@ function editSpec(specId) {
         
         // 수정 모드로 전환
         state.editingSpecId = specId;
-        state.selectedRanks = spec.ranks || [];
-        state.selectedJobs = spec.jobs || [];
-        state.selectedCompanies = spec.companies || [];
-        state.selectedRegions = spec.regions || [];
+        state.selectedDuties = spec.duty ? [spec.duty] : [];
+        state.selectedSubDuty = spec.subDuty || null;
+        state.selectedPosition = spec.position || null;
+        state.selectedCompanyType = spec.companyType || null;
+        state.selectedRegion = spec.region || null;
         
         console.log('State updated:', state);
         
-        // 경력 복원
-        if (spec.careers && spec.careers.length > 0) {
-            const careerStr = spec.careers[0];
-            const yearMatch = careerStr.match(/(\d+)년/);
-            const monthMatch = careerStr.match(/(\d+)개월/);
-            
-            if (yearMatch) elements.careerYears.value = yearMatch[1];
-            if (monthMatch) elements.careerMonths.value = monthMatch[1];
+        // 직무 버튼 렌더링
+        renderButtons('duties');
+        
+        // 직무가 선택되어 있으면 세부 조건 표시
+        if (spec.duty) {
+            showDetailBox(spec.duty);
+        }
+        
+        // 세부 조건이 선택되어 있으면 추가 정보 표시
+        if (spec.subDuty) {
+            showAdditionalBox();
         }
         
         // 회사명 복원
-        if (spec.companyName && elements.companyNameInput) {
-            elements.companyNameInput.value = spec.companyName;
-            if (elements.companyNameDisplay) {
-                elements.companyNameDisplay.textContent = spec.companyName;
+        const specCompanyNameInput = document.getElementById('specCompanyNameInput');
+        if (spec.companyName && specCompanyNameInput) {
+            specCompanyNameInput.value = spec.companyName;
+        }
+        
+        // 경력 복원
+        if (spec.career && spec.career !== '경력 없음') {
+            const careerYearsInput = document.getElementById('careerYears');
+            const careerMonthsInput = document.getElementById('careerMonths');
+            
+            // "년 월" 형식 파싱
+            const yearMatch = spec.career.match(/(\d+)년/);
+            const monthMatch = spec.career.match(/(\d+)개월/);
+            
+            if (careerYearsInput && yearMatch) {
+                careerYearsInput.value = yearMatch[1];
+                state.careerYears = yearMatch[1];
+            }
+            if (careerMonthsInput && monthMatch) {
+                careerMonthsInput.value = monthMatch[1];
+                state.careerMonths = monthMatch[1];
             }
         }
-        
-        // 경력 확인 버튼 눌러서 표시
-        if (spec.careers && spec.careers.length > 0 && elements.careerDisplay) {
-            elements.careerDisplay.textContent = spec.careers[0];
-        }
-        
-        // 모든 그리드 버튼 상태 업데이트
-        updateAllGridButtons();
         
         // 저장 버튼 텍스트 변경
         if (elements.saveButton) {
@@ -525,15 +624,10 @@ window.deleteSpec = deleteSpec;
 // 폼 초기화
 function resetForm() {
     state.editingSpecId = null;
-    state.selectedRanks = [];
-    state.selectedJobs = [];
-    state.selectedCompanies = [];
+    state.selectedDuties = [];
     state.selectedRegions = [];
     
-    if (elements.careerYears) elements.careerYears.value = '';
-    if (elements.careerMonths) elements.careerMonths.value = '';
     if (elements.companyNameInput) elements.companyNameInput.value = '';
-    if (elements.careerDisplay) elements.careerDisplay.textContent = '';
     if (elements.companyNameDisplay) elements.companyNameDisplay.textContent = '';
     if (elements.saveButton) elements.saveButton.textContent = '저장하기';
     

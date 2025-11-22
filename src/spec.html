@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 </head>
 <body>
+
     <div class="spec-container">
         <h2>보유 스펙 수정</h2>
 
@@ -22,54 +23,58 @@
             </div>
         </div>
 
-        <!-- 회사명 입력 -->
-        <div class="company-input-row">
-            <label for="companyNameInput">회사명</label>
-            <input type="text" id="companyNameInput" placeholder="회사명을 입력하세요" />
-            <button type="button" id="companyNameConfirmBtn" class="confirm-btn">확인</button>
-            <span id="companyNameDisplay" class="company-display"></span>
-        </div>
-
-        <!-- 직급/직책 -->
-        <section>
-            <h3>직급/직책</h3>
-            <div class="grid" id="ranks-grid"></div>
-        </section>
-
-        <!-- 경력 (별도 박스에 배치) -->
-        <section>
-            <h3>경력</h3>
-            <div class="career-input-group">
-                <div class="input-row">
-                    <input type="number" id="careerYears" min="0" max="50" placeholder="0" value="0">
-                    <span class="suffix">년</span>
-                </div>
-                <div class="input-row">
-                    <input type="number" id="careerMonths" min="0" max="11" placeholder="0" value="0">
-                    <span class="suffix">개월</span>
-                </div>
-                <button type="button" id="careerConfirmBtn" class="confirm-btn">확인</button>
-                <span id="careerDisplay" class="career-display"></span>
-            </div>
-        </section>
-
         <!-- 직무 -->
         <section>
             <h3>직무</h3>
-            <div class="grid" id="jobs-grid"></div>
+            <div class="grid" id="duty-grid"></div>
         </section>
 
-        <!-- 기업형태 -->
-        <section>
-            <h3>기업형태</h3>
-            <div class="grid" id="companies-grid"></div>
+        <!-- 세부 조건 -->
+        <section id="detail-box" style="display: none;">
+            <h3>세부 조건</h3>
+            <div class="grid" id="sub-duty-grid"></div>
         </section>
 
-        <!-- 근무지역 -->
-        <section>
-            <h3>근무지역</h3>
-            <div class="grid" id="regions-grid"></div>
-        </section>
+        <!-- 추가 정보 -->
+        <div id="additional-box" style="display: none;">
+            <!-- 회사명 -->
+            <section>
+                <h3>회사명</h3>
+                <div class="company-input-row">
+                    <input type="text" id="specCompanyNameInput" placeholder="회사명을 입력하세요" />
+                    <button type="button" id="specCompanyNameBtn" class="confirm-btn">확인</button>
+                </div>
+            </section>
+
+            <!-- 경력 -->
+            <section>
+                <h3>경력</h3>
+                <div class="career-input-row">
+                    <input type="number" id="careerYears" placeholder="0" min="0" />
+                    <span>년</span>
+                    <input type="number" id="careerMonths" placeholder="0" min="0" max="11" />
+                    <span>월</span>
+                </div>
+            </section>
+
+            <!-- 직급 -->
+            <section>
+                <h3>직급</h3>
+                <div class="grid" id="position-grid"></div>
+            </section>
+
+            <!-- 기업 형태 -->
+            <section>
+                <h3>기업 형태</h3>
+                <div class="grid" id="company-type-grid"></div>
+            </section>
+
+            <!-- 근무지역 -->
+            <section>
+                <h3>근무지역</h3>
+                <div class="grid" id="region-grid"></div>
+            </section>
+        </div>
 
         <div class="save-box">
             <button class="save-btn" id="save-button">정보 저장하기</button>
@@ -79,11 +84,12 @@
         <!-- 저장 팝업 모달 (profile.html과 동일한 디자인) -->
         <div id="saveModal" class="modal" aria-hidden="true">
             <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-                <p id="modalTitle">정보가 저장되었습니다</p>
+                <p id="modalTitle">저장 되었습니다.</p>
                 <button id="modalOk" class="save-btn">확인</button>
             </div>
         </div>
 
+        <div id="result"></div>
         <script src="spec.js"></script>
     </body>
     </html>
