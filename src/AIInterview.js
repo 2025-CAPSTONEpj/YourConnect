@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './AIInterview.css';
 
 function AIInterview() {
@@ -12,7 +13,7 @@ function AIInterview() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [answerInput, setAnswerInput] = useState('');
-  const [feedback, setFeedback] = useState('아직 제출된 답변이 없습니다.');
+  const [feedback, setFeedback] = useState(null);
   const [submittedQuestions, setSubmittedQuestions] = useState([]);
   const [favoriteQuestions, setFavoriteQuestions] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -34,13 +35,11 @@ function AIInterview() {
       return;
     }
 
-    setFeedback(`
-      Q. ${q}
-      A. ${a}
-      
-      피드백: 답변에 구체성이나 핵심 키워드가 부족합니다.
-      경험 기반 예시를 추가해보세요.
-    `);
+    setFeedback({
+      question: q,
+      answer: a,
+      feedbackText: '답변에 구체성이나 핵심 키워드가 부족합니다.\n경험 기반 예시를 추가해보세요.'
+    });
 
     if (!submittedQuestions.includes(q)) {
       setSubmittedQuestions([...submittedQuestions, q]);
@@ -61,7 +60,7 @@ function AIInterview() {
     setIsGenerated(false);
     setCurrentQuestion('');
     setAnswerInput('');
-    setFeedback('아직 제출된 답변이 없습니다.');
+    setFeedback(null);
     setCurrentIndex(0);
     setSubmittedQuestions([]);
     setFavoriteQuestions([]);
@@ -93,10 +92,10 @@ function AIInterview() {
             />
             <div className="profile-info">
               <h3>이가윤님</h3>
-              <a href="#" className="profile-edit">
+              <Link to="/profile" className="profile-edit">
                 <span>⚙️</span>
                 <span>회원정보 수정</span>
-              </a>
+              </Link>
             </div>
           </div>
           
@@ -192,7 +191,16 @@ function AIInterview() {
 
             <h3>피드백 히스토리</h3>
             <div className="feedback-box">
-              {feedback}
+              {!feedback ? (
+                <span style={{color: '#999'}}>아직 제출된 답변이 없습니다.</span>
+              ) : (
+                <>
+                  <div>Q. {feedback.question}</div>
+                  <div><strong>A. {feedback.answer}</strong></div>
+                  <br />
+                  <div className="feedback-text"><strong>피드백:</strong> {feedback.feedbackText}</div>
+                </>
+              )}
             </div>
           </section>
         </div>

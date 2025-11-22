@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import MiniProfile from './MiniProfile';
+import LoggedInProfile from './LoggedInProfile';
 import Advertisement from './Advertisement';
 
 function Home() {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("access_token");
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+    
+    // 로그인 상태 변경 감지
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   const mentors = [
     { 
@@ -217,7 +238,7 @@ function Home() {
           </section>
         </div>
       </div>
-      <MiniProfile />
+      {isLoggedIn ? <LoggedInProfile /> : <MiniProfile />}
       <Advertisement />
     </>
   );

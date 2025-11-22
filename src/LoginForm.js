@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './LoginForm.module.css';
 import myLogo from './logo.png';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -29,8 +30,11 @@ function LoginForm() {
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
 
+        // 로그인 상태 변경 이벤트 발생
+        window.dispatchEvent(new Event('loginStatusChanged'));
+        
         alert("로그인 성공! 메인 페이지로 이동합니다.");
-        window.location.href = "/";
+        navigate('/');
       } else {
         alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
       }

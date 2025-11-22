@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './MentoringChat.css';
 
 function MentoringChat() {
@@ -80,10 +81,10 @@ function MentoringChat() {
             />
             <div className="profile-info">
               <h3>이가윤님</h3>
-              <a href="#" className="profile-edit">
+              <Link to="/profile" className="profile-edit">
                 <span>⚙️</span>
                 <span>회원정보 수정</span>
-              </a>
+              </Link>
             </div>
           </div>
 

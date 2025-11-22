@@ -1,9 +1,40 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isLoginPage = location.pathname === "/login";
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("access_token");
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+    
+    // storage 이벤트 리스너 (다른 탭에서 로그인/로그아웃 시)
+    window.addEventListener('storage', checkLoginStatus);
+    // 커스텀 이벤트 리스너 (같은 탭에서 로그인/로그아웃 시)
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+    };
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    setIsLoggedIn(false);
+    window.dispatchEvent(new Event('loginStatusChanged'));
+    alert("로그아웃되었습니다.");
+    navigate('/');
+  };
 
   return (
     <header className="header-main">
@@ -30,13 +61,21 @@ function Header() {
           </div>
         )}
 
-        {/* 로그인 페이지가 아닐 때만 로그인/회원가입 버튼 표시 */}
+        {/* 로그인 페이지가 아닐 때만 인증 버튼 표시 */}
         {!isLoginPage && (
           <div className="auth-group">
-            <Link to="/login" className="btn btn-primary">
-              로그인
-            </Link>
-            <a href="#cta" className="btn btn-secondary">회원가입</a>
+            {isLoggedIn ? (
+              <button onClick={handleLogout} className="btn btn-primary">
+                로그아웃
+              </button>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-primary">
+                  로그인
+                </Link>
+                <a href="#cta" className="btn btn-secondary">회원가입</a>
+              </>
+            )}
           </div>
         )}
       </nav>

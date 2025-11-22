@@ -88,19 +88,17 @@ function LoggedInProfile() {
       onMouseDown={handleMouseDown}
     >
       <div className="logged-profile-content">
-        <div className="logged-profile-header">
-          <img 
-            src={`${process.env.PUBLIC_URL}/user.png`} 
-            alt="프로필 이미지" 
-            className="logged-profile-img" 
-          />
-          <div className="logged-profile-info">
-            <h4 className="logged-profile-name">이가윤님 👩🏻‍💻</h4>
-          </div>
+        <img 
+          src={`${process.env.PUBLIC_URL}/user.png`} 
+          alt="프로필 이미지" 
+          className="logged-profile-img" 
+        />
+        <div className="logged-profile-info">
+          <h3 className="logged-profile-name">이가윤님</h3>
+          <Link to="/profile" className="logged-profile-edit-link">
+            회원정보 수정 ⚙️
+          </Link>
         </div>
-        <Link to="/profile" className="logged-profile-edit-link">
-          회원정보 수정
-        </Link>
       </div>
     </div>
   );

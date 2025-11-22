@@ -1,14 +1,14 @@
-/* AI Interview 페이지 전용 스타일 */
+/* AIInterview.css - index.css의 공통 스타일 사용 */
+
 .ai-interview-container {
   min-height: 100vh;
   background: #fff;
   color: #222;
 }
 
-/* Main layout */
 .ai-main {
   display: grid;
-  grid-template-columns: 220px 1fr 1fr;
+  grid-template-columns: 260px 1fr 1fr;
   gap: 20px;
   padding: 20px 40px;
   height: calc(100vh - 100px);
@@ -17,7 +17,6 @@
   margin: 0 auto;
 }
 
-/* Sidebar */
 .ai-sidebar {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -26,23 +25,30 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
   background: white;
 }
 
 .ai-sidebar h3 {
   font-size: 1rem;
   margin-bottom: 10px;
+  align-self: flex-start;
+}
+
+.ai-sidebar h3:not(:first-of-type) {
+  margin-top: 20px;
 }
 
 .ai-sidebar .profile-box {
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   padding: 10px;
   margin-bottom: 16px;
-  min-width: 0;
+  width: fit-content;
+  box-shadow: none;
 }
 
 .ai-sidebar .profile-img {
@@ -57,28 +63,21 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 0;
-  flex: 1;
 }
 
 .ai-sidebar .profile-box h3 {
   margin: 0;
   font-size: 1rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ai-sidebar .profile-edit {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   font-size: 0.85rem;
   color: #666;
+  text-decoration: none;
   cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ai-sidebar .profile-edit:hover {
@@ -93,6 +92,7 @@
   margin-bottom: 16px;
   resize: vertical;
   padding: 8px;
+  align-self: stretch;
 }
 
 .ai-sidebar .question-list-header {
@@ -100,6 +100,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  width: 100%;
+  align-self: stretch;
 }
 
 .ai-sidebar .search-input {
@@ -115,6 +117,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
+  align-self: stretch;
 }
 
 .ai-sidebar .question-item {
@@ -135,6 +139,7 @@
 .ai-sidebar .empty-message {
   color: #999;
   font-size: 0.85rem;
+  margin-bottom: 16px;
 }
 
 .ai-sidebar .star {
@@ -293,4 +298,8 @@
   flex: 1;
   overflow-y: auto;
   white-space: pre-wrap;
+}
+
+.ai-right .feedback-box .feedback-text {
+  color: #2563eb;
 }
