@@ -1,0 +1,99 @@
+/* 광고 카드 */
+.advertisement-card {
+  position: fixed;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  width: 280px;
+  z-index: 19;
+  transition: left 0.1s ease-out, top 0.1s ease-out;
+  pointer-events: auto;
+}
+
+.advertisement-card:hover {
+  box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+}
+
+.ad-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ad-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ad-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.ad-content {
+  text-align: center;
+}
+
+.ad-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.ad-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: white;
+}
+
+.ad-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ad-cta-button {
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.ad-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ad-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ad-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.feature-icon {
+  font-weight: 700;
+  font-size: 1.1rem;
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourConnect | 프로필 설정</title>
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+  <header class="header-main">
+    <nav class="nav-container">
+      <!-- 로고 클릭 시 메인 페이지로 이동 -->
+      <div class="logo-area">
+        <a href="home.html">
+          <img src="yclogo.png" alt="CareerBuddy 로고" class="logo-img" />
+        </a>
+      </div>
+      <!-- 메뉴 -->
+      <div class="menu-category-group">
+        <a href="index.html" class="menu-item hover-purple">맞춤형 커리어 디자인🖥️</a>
+        <a href="mentoring.html" class="menu-item hover-purple">멘토링🤝🏼</a>
+        <a href="headhunting.html" class="menu-item hover-purple">헤드 헌팅🏢</a>
+      </div>
+
+      <!-- 로그아웃 -->
+      <div class="auth-group">
+        <a href="login.html" class="btn btn-secondary">로그아웃</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="profile-container">
+    <!-- 상단 프로필 요약 -->
+    <section class="profile-top">
+      <div class="profile-left">
+        <!-- Default profile avatar (inline SVG) -->
+        <div class="profile-img" aria-hidden="true">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.5" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.2" />
+            <path d="M4 21c1.5-4 6.5-6 8-6s6.5 2 8 6" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.2" />
+          </svg>
+        </div>
+      </div>
+      <div class="profile-info">
+  <h2 class="name">이가윤 <span class="membership">멤버십 구분: <strong>PRO</strong></span></h2>
+        <p class="pro-tag"><a href="#" class="membership-link">멤버십 관리 페이지 바로가기 &gt;</a></p>
+        
+        <!-- 저장된 스펙 정보 표시 영역 -->
+        <div id="specDisplay" class="spec-display-box">
+          <h3 class="spec-display-title">내 스펙 정보</h3>
+          <div id="specContent" class="spec-content">
+            <!-- JavaScript로 동적 생성 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 개인정보 수정 영역 -->
+    <section class="profile-detail">
+      <form>
+        <div class="form-row">
+          <label>전화번호</label>
+          <div class="phone-inputs">
+            <input type="text" value="010"> -
+            <input type="text" maxlength="4"> -
+            <input type="text" maxlength="4">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>이메일</label>
+          <input type="email" placeholder="example@email.com">
+        </div>
+
+        <div class="form-row">
+          <label>생년월일</label>
+          <input type="date">
+        </div>
+
+        <div class="form-row">
+          <label>성별</label>
+          <label><input type="radio" name="gender"> 남자</label>
+          <label><input type="radio" name="gender"> 여자</label>
+        </div>
+
+        <div class="form-row">
+          <label>마케팅 수신 동의</label>
+          <label><input type="radio" name="marketing"> 동의</label>
+          <label><input type="radio" name="marketing"> 비동의</label>
+        </div>
+
+        <div class="save-btn-wrap">
+          <button type="submit" class="save-btn">저장하기</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- 저장 팝업 모달 -->
+  <div id="saveModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <p id="modalTitle">정보가 저장되었습니다</p>
+      <button id="modalOk" class="save-btn">확인</button>
+    </div>
+  </div>
+
+  <script src="profile.js"></script>
+</body>
+</html>
