@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import Header from "./Header";
 import Home from "./Home"; // 새로운 홈 페이지
 import LoginForm from "./LoginForm";
+import Signup from "./Signup.jsx";
 import AIInterview from "./AIInterview";
 import Mentoring from "./Mentoring";
 import MentoringChat from "./MentoringChat";
@@ -12,7 +13,7 @@ import Spec from "./Spec.jsx";
 
 function AppContent() {
   const location = useLocation();
-  const isLoginPage = location.pathname === "/login";
+  const isLoginPage = location.pathname === "/login" || location.pathname === "/signup";
 
   return (
     <div className="bg-body text-main">
@@ -28,6 +29,7 @@ function AppContent() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/spec" element={<Spec />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </main>
       

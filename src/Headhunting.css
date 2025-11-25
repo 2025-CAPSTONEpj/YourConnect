@@ -101,8 +101,8 @@ body {
     flex-shrink: 0;
 }
 .profile-info { display: flex; flex-direction: column; gap: 0; }
-/* 프로필 이름을 이미지 기준으로 약 10px 아래로 배치 */
-.profile-box h3 { margin: 10px 0 0; font-size: 1rem; }
+/* 프로필 이름 상하 여백 균등 배치 */
+.profile-box h3 { margin: 0; font-size: 1rem; }
 
 .profile-edit {
     display: flex;

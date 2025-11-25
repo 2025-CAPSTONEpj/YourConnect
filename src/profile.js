@@ -55,10 +55,10 @@ function loadAndDisplaySpecs() {
       let totalMonths = 0;
       
       specsArray.forEach(spec => {
-        if (spec.careers && spec.careers.length > 0) {
-          const careerStr = spec.careers[0];
-          const yearMatch = careerStr.match(/(\d+)년/);
-          const monthMatch = careerStr.match(/(\d+)개월/);
+        // 새로운 구조: spec.career 문자열 (예: "3년 5개월", "2년", "6개월")
+        if (spec.career && spec.career !== '경력 없음') {
+          const yearMatch = spec.career.match(/(\d+)년/);
+          const monthMatch = spec.career.match(/(\d+)개월/);
           
           if (yearMatch) totalYears += parseInt(yearMatch[1]);
           if (monthMatch) totalMonths += parseInt(monthMatch[1]);

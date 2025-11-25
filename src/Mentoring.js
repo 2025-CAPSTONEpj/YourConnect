@@ -42,15 +42,15 @@ function Mentoring() {
                   src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" 
                   alt="멘토 프로필"
                 />
+                <div className="rating-row" aria-label={`평점 ${mentor.rating.toFixed(1)}점, 총 ${mentor.ratingCount}명 평가`}>
+                  <span className="rating-label">평점</span>
+                  <span className="mentor-star" aria-hidden="true">★</span>
+                  <span className="rating">{mentor.rating.toFixed(1)}</span>
+                  <span className="rating-count">({mentor.ratingCount})</span>
+                </div>
                 <div className="mentor-info">
                   <h3>{mentor.name}</h3>
                   <p>전문 분야: {mentor.field}</p>
-                  <div className="rating-row" aria-label={`평점 ${mentor.rating.toFixed(1)}점, 총 ${mentor.ratingCount}명 평가`}>
-                    <span className="rating-label">평점</span>
-                    <span className="mentor-star" aria-hidden="true">★</span>
-                    <span className="rating">{mentor.rating.toFixed(1)}</span>
-                    <span className="rating-count">({mentor.ratingCount})</span>
-                  </div>
                 </div>
               </div>
               <div className="mentor-btns">

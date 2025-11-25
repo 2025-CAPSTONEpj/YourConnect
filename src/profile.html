@@ -7,10 +7,31 @@
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
+  <header class="header-main">
+    <nav class="nav-container">
+      <!-- 로고 클릭 시 메인 페이지로 이동 -->
+      <div class="logo-area">
+        <a href="home.html">
+          <img src="yclogo.png" alt="CareerBuddy 로고" class="logo-img" />
+        </a>
+      </div>
+      <!-- 메뉴 -->
+      <div class="menu-category-group">
+        <a href="index.html" class="menu-item hover-purple">맞춤형 커리어 디자인🖥️</a>
+        <a href="mentoring.html" class="menu-item hover-purple">멘토링🤝🏼</a>
+        <a href="headhunting.html" class="menu-item hover-purple">헤드 헌팅🏢</a>
+      </div>
+
+      <!-- 로그아웃 -->
+      <div class="auth-group">
+        <a href="login.html" class="btn btn-secondary">로그아웃</a>
+      </div>
+    </nav>
+  </header>
 
   <main class="profile-container">
     <!-- 상단 프로필 요약 -->
-     <section class="profile-top">
+    <section class="profile-top">
       <div class="profile-left">
         <!-- Default profile avatar (inline SVG) -->
         <div class="profile-img" aria-hidden="true">
@@ -21,9 +42,8 @@
         </div>
       </div>
       <div class="profile-info">
-      <h2 class="name">이가윤 <span class="membership">멤버십 구분: <strong>PRO</strong></span></h2>
+  <h2 class="name">이가윤 <span class="membership">멤버십 구분: <strong>PRO</strong></span></h2>
         <p class="pro-tag"><a href="#" class="membership-link">멤버십 관리 페이지 바로가기 &gt;</a></p>
-        
         
         <!-- 저장된 스펙 정보 표시 영역 -->
         <div id="specDisplay" class="spec-display-box">
@@ -41,7 +61,7 @@
         <div class="form-row">
           <label>전화번호</label>
           <div class="phone-inputs">
-            <input type="text" value="010" readonly> -
+            <input type="text" value="010"> -
             <input type="text" maxlength="4"> -
             <input type="text" maxlength="4">
           </div>

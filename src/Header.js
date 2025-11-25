@@ -73,7 +73,7 @@ function Header() {
                 <Link to="/login" className="btn btn-primary">
                   로그인
                 </Link>
-                <a href="#cta" className="btn btn-secondary">회원가입</a>
+                <Link to="/signup" className="btn btn-secondary">회원가입</Link>
               </>
             )}
           </div>

@@ -56,6 +56,7 @@
 .profile-footer {
   border-top: 1px solid #e5e7eb;
   padding-top: 0.75rem;
+  padding-bottom: 0.75rem; /* 하단 여백을 상단과 동일하게 */
   display: flex;
   justify-content: space-around;
 }
