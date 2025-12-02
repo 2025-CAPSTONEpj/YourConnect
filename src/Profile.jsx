@@ -5,12 +5,26 @@ import './profile.css';
 function Profile() {
   const navigate = useNavigate();
   const [specs, setSpecs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userInfo, setUserInfo] = useState({
+    type: '일반',
+    name: '이가윤',
+    birth: '1998-05-15',
+    gender: '여자',
+    email: 'example@email.com',
+    marketing: '동의'
+  });
+
+  const API_BASE_URL = 'http://192.168.225.44:8000';
 
   useEffect(() => {
     loadAndDisplaySpecs();
+    loadUserInfo();
     
     const handlePageShow = () => {
       loadAndDisplaySpecs();
+      loadUserInfo();
     };
     
     window.addEventListener('pageshow', handlePageShow);
@@ -18,50 +32,53 @@ function Profile() {
   }, []);
 
   const loadAndDisplaySpecs = () => {
-    const savedSpecs = localStorage.getItem('userSpecs');
-    
-    if (!savedSpecs) {
-      setSpecs([]);
-      return;
-    }
-
     try {
-      const parsed = JSON.parse(savedSpecs);
-      const specsArray = Array.isArray(parsed) ? parsed : [parsed];
-      setSpecs(specsArray);
+      setLoading(true);
+      const savedSpecs = localStorage.getItem('userSpecs');
+      console.log('📦 Loaded specs from localStorage:', savedSpecs);
+      
+      if (savedSpecs) {
+        const parsed = JSON.parse(savedSpecs);
+        const specsArray = Array.isArray(parsed) ? parsed : [parsed];
+        const withIds = specsArray.map((spec, idx) => ({
+          ...spec,
+          id: spec.id || `spec-${Date.now()}-${idx}`
+        }));
+        console.log('✅ Parsed specs:', withIds);
+        setSpecs(withIds);
+      } else {
+        console.log('❌ No specs found in localStorage');
+        setSpecs([]);
+      }
     } catch (e) {
-      console.error('스펙 로드 오류:', e);
+      console.error('⚠️ Error loading specs:', e);
       setSpecs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUserInfo = () => {
+    const savedUserInfo = localStorage.getItem('userInfo');
+    
+    if (savedUserInfo) {
+      try {
+        const parsed = JSON.parse(savedUserInfo);
+        setUserInfo(parsed);
+      } catch (e) {
+        console.error('개인정보 로드 오류:', e);
+      }
     }
   };
 
   const calculateTotalCareer = () => {
-    let totalYears = 0;
-    let totalMonths = 0;
-    
-    specs.forEach(spec => {
-      if (spec.career) {
-        const careerStr = spec.career;
-        const yearMatch = careerStr.match(/(\d+)년/);
-        const monthMatch = careerStr.match(/(\d+)개월/);
-        
-        if (yearMatch) totalYears += parseInt(yearMatch[1]);
-        if (monthMatch) totalMonths += parseInt(monthMatch[1]);
-      }
-    });
-    
-    totalYears += Math.floor(totalMonths / 12);
-    totalMonths = totalMonths % 12;
-    
-    if (totalYears === 0 && totalMonths === 0) {
+    if (specs.length === 0) {
       return '경력 없음';
-    } else if (totalYears === 0) {
-      return `${totalMonths}개월`;
-    } else if (totalMonths === 0) {
-      return `${totalYears}년`;
-    } else {
-      return `${totalYears}년 ${totalMonths}개월`;
     }
+    
+    // 첫 번째(유일한) 스펙의 경력 반환
+    const spec = specs[0];
+    return spec.career || '경력 없음';
   };
 
   const handleEditSpec = () => {
@@ -70,23 +87,6 @@ function Profile() {
 
   const handleCreateSpec = () => {
     navigate('/spec');
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const modal = document.getElementById('saveModal');
-    if (modal) {
-      modal.setAttribute('aria-hidden', 'false');
-      modal.classList.add('open');
-    }
-  };
-
-  const handleModalClose = () => {
-    const modal = document.getElementById('saveModal');
-    if (modal) {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden', 'true');
-    }
   };
 
   return (
@@ -103,7 +103,7 @@ function Profile() {
           </div>
           <div className="profile-info-section">
             <div className="profile-name-row">
-              <h2 className="profile-name">이가윤</h2>
+              <h2 className="profile-name">{userInfo.name}</h2>
               <p className="profile-membership">멤버십 구분: <strong>PRO</strong></p>
             </div>
             <p className="profile-membership-link">
@@ -116,7 +116,11 @@ function Profile() {
         <div className="spec-info-section">
           <h3 className="spec-section-title">내 스펙 정보</h3>
           <div className="spec-content-box">
-            {specs.length === 0 ? (
+            {loading ? (
+              <div className="no-spec-container">
+                <p className="no-spec-message">로딩 중...</p>
+              </div>
+            ) : specs.length === 0 ? (
               <div className="no-spec-container">
                 <p className="no-spec-message">아직 작성된 정보가 없습니다.</p>
                 <button className="create-spec-btn" onClick={handleCreateSpec}>
@@ -137,59 +141,45 @@ function Profile() {
         </div>
       </section>
 
-      {/* 개인정보 수정 영역 */}
+      {/* 개인정보 표시 영역 */}
       <section className="profile-detail">
-        <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <label>전화번호</label>
-            <div className="phone-inputs">
-              <input type="text" defaultValue="010" /> -
-              <input type="text" maxLength="4" /> -
-              <input type="text" maxLength="4" />
-            </div>
+        <h3 className="section-title">개인정보</h3>
+        <div className="info-display">
+          <div className="info-row">
+            <span className="info-label">가입 유형</span>
+            <span className="info-value">{userInfo.type} 가입</span>
           </div>
-
-          <div className="form-row">
-            <label>이메일</label>
-            <input type="email" placeholder="example@email.com" />
+          <div className="info-row">
+            <span className="info-label">이름</span>
+            <span className="info-value">{userInfo.name}</span>
           </div>
-
-          <div className="form-row">
-            <label>생년월일</label>
-            <input type="date" />
+          <div className="info-row">
+            <span className="info-label">생년월일</span>
+            <span className="info-value">{userInfo.birth}</span>
           </div>
-
-          <div className="form-row">
-            <label>성별</label>
-            <div>
-              <label><input type="radio" name="gender" /> 남자</label>
-              <label><input type="radio" name="gender" /> 여자</label>
-            </div>
+          <div className="info-row">
+            <span className="info-label">성별</span>
+            <span className="info-value">{userInfo.gender}</span>
           </div>
-
-          <div className="form-row">
-            <label>마케팅 수신 동의</label>
-            <div>
-              <label><input type="radio" name="marketing" /> 동의</label>
-              <label><input type="radio" name="marketing" /> 비동의</label>
-            </div>
+          <div className="info-row">
+            <span className="info-label">이메일</span>
+            <span className="info-value">{userInfo.email}</span>
           </div>
-
-          <div className="save-btn-wrap">
-            <button type="submit" className="save-btn">저장하기</button>
+          <div className="info-row">
+            <span className="info-label">비밀번호</span>
+            <span className="info-value">••••••••</span>
           </div>
-        </form>
-      </section>
-
-      {/* 저장 팝업 모달 */}
-      <div id="saveModal" className="modal" aria-hidden="true">
-        <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-          <p id="modalTitle">정보가 저장되었습니다</p>
-          <button id="modalOk" className="save-btn" onClick={handleModalClose}>
-            확인
+          <div className="info-row">
+            <span className="info-label">마케팅 수신 동의</span>
+            <span className="info-value">{userInfo.marketing}</span>
+          </div>
+        </div>
+        <div className="edit-btn-wrap">
+          <button className="edit-info-btn" onClick={() => navigate('/profilesetting')}>
+            개인정보 수정
           </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

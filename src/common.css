@@ -3,6 +3,8 @@
   position: fixed;
   width: 18rem;
   z-index: 20;
+  right: 20px;
+  top: 140px;
 }
 
 .mini-profile-card {

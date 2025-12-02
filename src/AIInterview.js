@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './AIInterview.css';
 
 function AIInterview() {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: '이가윤' });
   const [questions] = useState([
     "자기소개를 해보세요.",
     "최근에 해결한 어려운 문제와 접근 방식을 설명해 주세요.",
@@ -18,6 +21,33 @@ function AIInterview() {
   const [favoriteQuestions, setFavoriteQuestions] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isGenerated, setIsGenerated] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('access_token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    const savedUserInfo = localStorage.getItem('userInfo');
+    if (savedUserInfo) {
+      try {
+        const parsed = JSON.parse(savedUserInfo);
+        setUserInfo({ name: parsed.name || '이가윤' });
+      } catch (e) {
+        console.error('사용자 정보 로드 오류:', e);
+      }
+    }
+
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   const handleGenerate = () => {
     setIsGenerated(true);
@@ -84,20 +114,40 @@ function AIInterview() {
       <main className="ai-main">
         {/* 왼쪽 영역 */}
         <aside className="ai-sidebar">
-          <div className="profile-box">
-            <img 
-              className="profile-img" 
-              src="https://www.gravatar.com/avatar/?d=mp&s=100" 
-              alt="기본 프로필 이미지"
-            />
-            <div className="profile-info">
-              <h3>이가윤님</h3>
-              <Link to="/profile" className="profile-edit">
-                <span>⚙️</span>
-                <span>회원정보 수정</span>
-              </Link>
+          {isLoggedIn ? (
+            <div className="ai-profile-box logged">
+              <div className="ai-profile-content">
+                <img 
+                  className="ai-profile-img" 
+                  src="https://www.gravatar.com/avatar/?d=mp&s=100" 
+                  alt="프로필 이미지"
+                />
+                <div className="ai-profile-info">
+                  <h3 className="ai-profile-name">{userInfo.name}님</h3>
+                  <Link to="/profile" className="ai-profile-edit">
+                    <span>⚙️</span>
+                    <span>회원정보 수정</span>
+                  </Link>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="ai-profile-box">
+              <div className="ai-profile-content" onClick={() => navigate('/login')}>
+                <img 
+                  className="ai-user-icon" 
+                  src={`${process.env.PUBLIC_URL}/user.png`} 
+                  alt="사용자 아이콘"
+                />
+                <p className="ai-profile-text">로그인이 필요합니다.</p>
+              </div>
+              <div className="ai-profile-footer">
+                <a href="#find-id" className="ai-footer-link">아이디 찾기</a>
+                <div className="ai-divider"></div>
+                <a href="#find-pw" className="ai-footer-link">비밀번호 찾기</a>
+              </div>
+            </div>
+          )}
           
           <textarea className="memo" placeholder="메모"></textarea>
 

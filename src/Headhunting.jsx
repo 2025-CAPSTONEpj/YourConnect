@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './headhunting.css';
 
 function Headhunting() {
+  const navigate = useNavigate();
   const [state, setState] = useState({
     selectedRanks: [],
     selectedCareers: [],
@@ -17,6 +18,37 @@ function Headhunting() {
   const [specs, setSpecs] = useState([]);
   const [expandedSpecs, setExpandedSpecs] = useState({});
   const [selectedMainJob, setSelectedMainJob] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: '이가윤' });
+
+  const API_BASE_URL = 'http://192.168.226.44:8000';
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('access_token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    const savedUserInfo = localStorage.getItem('userInfo');
+    if (savedUserInfo) {
+      try {
+        const parsed = JSON.parse(savedUserInfo);
+        setUserInfo({ name: parsed.name || '이가윤' });
+      } catch (e) {
+        console.error('사용자 정보 로드 오류:', e);
+      }
+    }
+
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   const data = {
       ranks: ["사원", "주임", "대리", "과장", "차장", "부장", "임원"], // 직급/직책
@@ -148,17 +180,25 @@ function Headhunting() {
   useEffect(() => {
     // Load specs from localStorage
     const loadSpecs = () => {
-      const savedSpecs = localStorage.getItem('userSpecs');
-      if (savedSpecs) {
-        try {
+      try {
+        const savedSpecs = localStorage.getItem('userSpecs');
+        console.log('📦 [Headhunting] Loaded specs from localStorage:', savedSpecs);
+        
+        if (savedSpecs) {
           const parsed = JSON.parse(savedSpecs);
           const specsArray = Array.isArray(parsed) ? parsed : [parsed];
-          setSpecs(specsArray);
-        } catch (e) {
-          console.error('스펙 로드 오류:', e);
+          const withIds = specsArray.map((spec, idx) => ({
+            ...spec,
+            id: spec.id || `spec-${Date.now()}-${idx}`
+          }));
+          console.log('✅ [Headhunting] Parsed specs:', withIds);
+          setSpecs(withIds);
+        } else {
+          console.log('❌ [Headhunting] No specs found in localStorage');
           setSpecs([]);
         }
-      } else {
+      } catch (e) {
+        console.error('⚠️ [Headhunting] Error loading specs:', e);
         setSpecs([]);
       }
     };
@@ -177,7 +217,7 @@ function Headhunting() {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('pageshow', handleStorageChange);
     };
-  }, []);
+  }, []);;
 
   // 이전 계층 로직 제거됨 (Spec 구조는 단일 대분류/단일 세부직무 선택)
 
@@ -355,13 +395,40 @@ function Headhunting() {
   return (
     <main className="headhunt-layout">
       <aside className="headhunt-sidebar">
-        <div className="profile-box">
-          <img className="profile-img" src="https://www.gravatar.com/avatar/?d=mp&s=100" alt="기본 프로필 이미지" />
-          <div className="profile-info">
-            <h3>이가윤님</h3>
-            <p><Link to="/profile" className="profile-edit">회원정보 수정 ⚙️</Link></p>
+        {isLoggedIn ? (
+          <div className="headhunt-profile-box logged">
+            <div className="headhunt-profile-content">
+              <img 
+                className="headhunt-profile-img" 
+                src="https://www.gravatar.com/avatar/?d=mp&s=100" 
+                alt="프로필 이미지"
+              />
+              <div className="headhunt-profile-info">
+                <h3 className="headhunt-profile-name">{userInfo.name}님</h3>
+                <Link to="/profile" className="headhunt-profile-edit">
+                  <span>⚙️</span>
+                  <span>회원정보 수정</span>
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="headhunt-profile-box">
+            <div className="headhunt-profile-content" onClick={() => navigate('/login')}>
+              <img 
+                className="headhunt-user-icon" 
+                src={`${process.env.PUBLIC_URL}/user.png`} 
+                alt="사용자 아이콘"
+              />
+              <p className="headhunt-profile-text">로그인이 필요합니다.</p>
+            </div>
+            <div className="headhunt-profile-footer">
+              <a href="#find-id" className="headhunt-footer-link">아이디 찾기</a>
+              <div className="headhunt-divider"></div>
+              <a href="#find-pw" className="headhunt-footer-link">비밀번호 찾기</a>
+            </div>
+          </div>
+        )}
 
         <div className="sidebar-box">
           <div className="sidebar-header">

@@ -6,9 +6,11 @@
   padding: 24px;
   color: white;
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-  width: 280px;
+  width: 18rem;
   z-index: 19;
-  transition: left 0.1s ease-out, top 0.1s ease-out;
+  right: 20px;
+  top: 300px;
+  transition: all 0.1s ease-out;
   pointer-events: auto;
 }
 

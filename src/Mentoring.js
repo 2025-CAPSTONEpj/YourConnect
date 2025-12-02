@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import './Mentoring.css';
 
 function Mentoring() {
@@ -7,6 +7,35 @@ function Mentoring() {
   const [showModal, setShowModal] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState('');
   const [isAccepted, setIsAccepted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: '이가윤' });
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('access_token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    const savedUserInfo = localStorage.getItem('userInfo');
+    if (savedUserInfo) {
+      try {
+        const parsed = JSON.parse(savedUserInfo);
+        setUserInfo({ name: parsed.name || '이가윤' });
+      } catch (e) {
+        console.error('사용자 정보 로드 오류:', e);
+      }
+    }
+
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   const mentors = [
     { name: "이서준", field: "IT / 백엔드 개발자", rating: 4.9, ratingCount: 128 },
@@ -64,14 +93,40 @@ function Mentoring() {
         </section>
 
         <aside className="mentoring-aside">
-          <h4>이가윤님</h4>
-          <p onClick={() => navigate('/profile')} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#9333EA'} onMouseLeave={(e) => e.target.style.color = 'inherit'}>회원정보 수정 ⚙️</p>
-          <hr />
-          <h4>분야 선택</h4>
-          <p>개발자 / PM / 디자이너</p>
-          <hr />
-          <h4>멘토링 진행 상태</h4>
-          <p>요청 대기 / 수락됨</p>
+          {isLoggedIn ? (
+            <div className="mentoring-profile-box logged">
+              <div className="mentoring-profile-content">
+                <img 
+                  className="mentoring-profile-img" 
+                  src="https://www.gravatar.com/avatar/?d=mp&s=100" 
+                  alt="프로필 이미지"
+                />
+                <div className="mentoring-profile-info">
+                  <h3 className="mentoring-profile-name">{userInfo.name}님</h3>
+                  <Link to="/profile" className="mentoring-profile-edit">
+                    <span>⚙️</span>
+                    <span>회원정보 수정</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mentoring-profile-box">
+              <div className="mentoring-profile-content" onClick={() => navigate('/login')}>
+                <img 
+                  className="mentoring-user-icon" 
+                  src={`${process.env.PUBLIC_URL}/user.png`} 
+                  alt="사용자 아이콘"
+                />
+                <p className="mentoring-profile-text">로그인이 필요합니다.</p>
+              </div>
+              <div className="mentoring-profile-footer">
+                <a href="#find-id" className="mentoring-footer-link">아이디 찾기</a>
+                <div className="mentoring-divider"></div>
+                <a href="#find-pw" className="mentoring-footer-link">비밀번호 찾기</a>
+              </div>
+            </div>
+          )}
         </aside>
       </main>
 

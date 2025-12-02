@@ -7,6 +7,36 @@ function LoggedInProfile() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isManuallyMoved, setIsManuallyMoved] = useState(false);
+  const [userInfo, setUserInfo] = useState({
+    name: '이가윤'
+  });
+
+  // localStorage에서 사용자 정보 불러오기
+  useEffect(() => {
+    const loadUserInfo = () => {
+      const savedUserInfo = localStorage.getItem('userInfo');
+      if (savedUserInfo) {
+        try {
+          const parsed = JSON.parse(savedUserInfo);
+          setUserInfo({ name: parsed.name || '이가윤' });
+        } catch (e) {
+          console.error('사용자 정보 로드 오류:', e);
+        }
+      }
+    };
+
+    loadUserInfo();
+
+    // storage 변경 감지 (다른 탭에서 변경 시)
+    window.addEventListener('storage', loadUserInfo);
+    // 로그인/로그아웃 시 갱신
+    window.addEventListener('loginStatusChanged', loadUserInfo);
+
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
+      window.removeEventListener('loginStatusChanged', loadUserInfo);
+    };
+  }, []);
 
   const handleMouseDown = (e) => {
     // 링크나 버튼 클릭 시 드래그 방지
@@ -94,7 +124,7 @@ function LoggedInProfile() {
           className="logged-profile-img" 
         />
         <div className="logged-profile-info">
-          <h3 className="logged-profile-name">이가윤님</h3>
+          <h3 className="logged-profile-name">{userInfo.name}님</h3>
           <Link to="/profile" className="logged-profile-edit-link">
             회원정보 수정 ⚙️
           </Link>

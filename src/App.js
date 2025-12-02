@@ -9,6 +9,7 @@ import Mentoring from "./Mentoring";
 import MentoringChat from "./MentoringChat";
 import Headhunting from "./Headhunting.jsx";
 import Profile from "./Profile.jsx";
+import ProfileSetting from "./ProfileSetting.jsx";
 import Spec from "./Spec.jsx";
 
 function AppContent() {
@@ -27,6 +28,7 @@ function AppContent() {
           <Route path="/mentoring-chat" element={<MentoringChat />} />
           <Route path="/headhunting" element={<Headhunting />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profilesetting" element={<ProfileSetting />} />
           <Route path="/spec" element={<Spec />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<Signup />} />

@@ -20,18 +20,21 @@ function Spec() {
   const [careerMonths, setCareerMonths] = useState(0);
   const [showDetailBox, setShowDetailBox] = useState(false);
   const [showAdditionalBox, setShowAdditionalBox] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const API_BASE_URL = 'http://192.168.225.44:8000';
 
   const data = {
-    duties: ["개발", "데이터", "인프라/플랫폼/Devops", "기획", "디자인", "QA/테스트"],
+    duties: ["개발", "데이터", "인공지능/머신러닝", "디자인", "QA/테스트"],
     subDuties: {
       "개발": ["FE", "BE", "APP"],
       "데이터": ["데이터 분석가", "데이터 엔지니어", "머신러닝 엔지니어"],
-      "인프라/플랫폼/Devops": ["Devops", "클라우드", "보안"],
-      "기획": ["서비스 기획", "PO", "PM"],
+      "인공지능/머신러닝": ["머신러닝 엔지니어", "AI 연구원", "데이터 사이언티스트"],
       "디자인": ["UIUX", "BX", "그래픽 디자이너", "모션 디자이너"],
       "QA/테스트": ["QA", "테스트 엔지니어"]
     },
-    positions: ["사원", "주임", "대리", "과장", "차장", "부장", "임원"],
+    positions: ["신입", "주임", "대리", "과장", "차장", "부장", "임원"],
     companyTypes: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"],
     regions: [
       "서울", "경기", "인천", "대전", "세종", "충남", "충북", "광주",
@@ -41,13 +44,11 @@ function Spec() {
 
   useEffect(() => {
     loadSpecs();
-    // 페이지 포커스 시에도 다시 로드하여 최신 상태 유지
-    window.addEventListener('focus', loadSpecs);
-    return () => window.removeEventListener('focus', loadSpecs);
   }, []);
 
   const loadSpecs = () => {
     try {
+      setLoading(true);
       const savedSpecs = localStorage.getItem('userSpecs');
       console.log('📦 Loaded specs from localStorage:', savedSpecs);
       
@@ -56,7 +57,7 @@ function Spec() {
         const specsArray = Array.isArray(parsed) ? parsed : [parsed];
         const withIds = specsArray.map((spec, idx) => ({
           ...spec,
-          id: spec.id || `legacy-${idx}`
+          id: spec.id || `spec-${Date.now()}-${idx}`
         }));
         console.log('✅ Parsed specs:', withIds);
         setSpecs(withIds);
@@ -67,6 +68,8 @@ function Spec() {
     } catch (e) {
       console.error('⚠️ Error loading specs:', e);
       setSpecs([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,8 +79,9 @@ function Spec() {
       const selectedItems = prevState[key];
 
       if (category === 'Duties') {
-        // 직무는 단일 선택
-        const newSelected = selectedItems?.includes(item) ? [] : [item];
+        // 직무는 단일 선택 - 이미 선택된 항목을 다시 클릭하면 해제, 다른 항목 클릭하면 변경
+        const isCurrentlySelected = selectedItems?.includes(item);
+        const newSelected = isCurrentlySelected ? [] : [item];
         
         if (newSelected.length > 0) {
           return {
@@ -132,8 +136,15 @@ function Spec() {
 
   const renderButtons = (category) => {
     const items = data[category];
-    const key = `selected${category.charAt(0).toUpperCase() + category.slice(1)}`;
-    const selectedItems = state[key];
+    let selectedItems;
+    
+    // 카테고리별로 올바른 state 키 매핑
+    if (category === 'duties') {
+      selectedItems = state.selectedDuties;
+    } else {
+      const key = `selected${category.charAt(0).toUpperCase() + category.slice(1)}`;
+      selectedItems = state[key];
+    }
 
     if (!items) {
       return <div>No items found for {category}</div>;
@@ -141,14 +152,12 @@ function Spec() {
 
     return items.map((item, idx) => {
       const isSelected = selectedItems?.includes(item);
-      const isDisabled = !isSelected && selectedItems?.length > 0;
 
       return (
         <button
           key={idx}
-          className={`${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-          disabled={isDisabled}
-          onClick={() => toggleSelect(item, category.charAt(0).toUpperCase() + category.slice(1))}
+          className={isSelected ? 'selected' : ''}
+          onClick={() => toggleSelect(item, category === 'duties' ? 'Duties' : category.charAt(0).toUpperCase() + category.slice(1))}
         >
           {item}
         </button>
@@ -199,7 +208,7 @@ function Spec() {
     }
 
     const newSpec = {
-      id: state.editingSpecId || Date.now().toString(),
+      id: state.editingSpecId || `spec-${Date.now()}`,
       duty: state.selectedDuties[0] || '',
       subDuty: state.selectedSubDuty || '',
       companyName: companyName.trim(),
@@ -224,12 +233,14 @@ function Spec() {
     }
 
     if (state.editingSpecId) {
+      // 수정 모드
       const index = specsArray.findIndex(s => s.id === state.editingSpecId);
       if (index !== -1) {
         specsArray[index] = newSpec;
         console.log('🔄 Updated existing spec at index:', index);
       }
     } else {
+      // 추가 모드
       specsArray.push(newSpec);
       console.log('✨ Added new spec');
     }
@@ -272,10 +283,10 @@ function Spec() {
       
       setState({
         selectedDuties: duty ? [duty] : [],
-        selectedSubDuty: subDuty,
-        selectedPosition: spec.position || '',
-        selectedCompanyType: spec.companyType || '',
-        selectedRegion: spec.region || '',
+        selectedSubDuty: subDuty || null,
+        selectedPosition: spec.position || null,
+        selectedCompanyType: spec.companyType || null,
+        selectedRegion: spec.region || null,
         showDetailBox: !!duty,
         showAdditionalBox: !!subDuty,
         editingSpecId: specId
@@ -283,22 +294,30 @@ function Spec() {
       
       setCompanyName(spec.companyName || '');
       
-      const careerMatch = spec.career?.match(/(\d+)년\s*(\d+)개월|(\d+)년|(\d+)개월|경력 없음/);
-      if (careerMatch) {
-        if (spec.career === '경력 없음') {
-          setCareerYears('0');
-          setCareerMonths('0');
-        } else if (careerMatch[1] && careerMatch[2]) {
-          setCareerYears(careerMatch[1]);
-          setCareerMonths(careerMatch[2]);
-        } else if (careerMatch[3]) {
-          setCareerYears(careerMatch[3]);
-          setCareerMonths('0');
-        } else if (careerMatch[4]) {
-          setCareerYears('0');
-          setCareerMonths(careerMatch[4]);
-        }
+      // career 필드에서 년도와 월 추출
+      let years = 0;
+      let months = 0;
+      
+      const yearMatch = spec.career?.match(/(\d+)년/);
+      const monthMatch = spec.career?.match(/(\d+)개월/);
+      
+      if (yearMatch) {
+        years = parseInt(yearMatch[1]);
       }
+      if (monthMatch) {
+        months = parseInt(monthMatch[1]);
+      }
+      
+      setCareerYears(years.toString());
+      setCareerMonths(months.toString());
+      
+      // 페이지 상단(직무 선택 영역)으로 스크롤
+      setTimeout(() => {
+        const dutySection = document.querySelector('.spec-container section');
+        if (dutySection) {
+          dutySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
@@ -312,6 +331,7 @@ function Spec() {
           specsArray = Array.isArray(parsed) ? parsed : [parsed];
           specsArray = specsArray.filter(s => s.id !== specId);
           localStorage.setItem('userSpecs', JSON.stringify(specsArray));
+          console.log('🗑️ Spec deleted:', specId);
           loadSpecs();
         } catch (e) {
           console.error('Error deleting spec:', e);
@@ -341,7 +361,9 @@ function Spec() {
       <div id="currentSpecSummary" className="current-spec-summary">
         <h3>현재 등록된 스펙</h3>
         <div id="currentSpecsContainer">
-          {specs.length === 0 ? (
+          {loading ? (
+            <p style={{ color: '#666', textAlign: 'center', padding: '20px' }}>로딩 중...</p>
+          ) : specs.length === 0 ? (
             <p style={{ color: '#666', textAlign: 'center', padding: '20px' }}>등록된 스펙이 없습니다.</p>
           ) : (
             specs.map(spec => (
@@ -504,10 +526,21 @@ function Spec() {
       )}
 
       <div className="save-box">
-        <button className="save-btn" id="save-button" onClick={handleSave}>
-          정보 저장하기
+        <button 
+          className="save-btn" 
+          id="save-button" 
+          onClick={handleSave}
+          disabled={loading}
+        >
+          {loading ? '저장 중...' : '정보 저장하기'}
         </button>
       </div>
+
+      {error && (
+        <div style={{ color: 'red', textAlign: 'center', marginTop: '10px' }}>
+          {error}
+        </div>
+      )}
 
       {showModal && (
         <div id="saveModal" className="modal" aria-hidden="false">
@@ -522,5 +555,4 @@ function Spec() {
     </div>
   );
 }
-
 export default Spec;

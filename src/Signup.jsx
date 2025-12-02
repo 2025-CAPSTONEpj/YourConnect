@@ -43,10 +43,23 @@ export default function Signup() {
       return;
     }
 
-    setForm({
+    // 개별 체크박스 변경
+    const updatedForm = {
       ...form,
       [name]: type === "checkbox" ? checked : value,
-    });
+    };
+
+    // 개별 체크박스 변경 시 전체 동의 체크박스 상태 업데이트
+    if (type === "checkbox" && ["agree14", "agreeTerms", "agreePrivacy", "agreeMarketing"].includes(name)) {
+      const allChecked = 
+        updatedForm.agree14 && 
+        updatedForm.agreeTerms && 
+        updatedForm.agreePrivacy && 
+        updatedForm.agreeMarketing;
+      updatedForm.agreeAll = allChecked;
+    }
+
+    setForm(updatedForm);
   };
 
   const handleSubmit = async (e) => {
@@ -132,25 +145,20 @@ export default function Signup() {
     // 모든 검증 성공 시 → Django 로 회원가입 요청
     const signupData = {
       account_type: accountType,      // personal / company
-      type: form.type,                // 일반/멘토
-      name: form.name,
-      birth: form.birth,
-      gender: form.gender,
       email: form.email,
       password: form.password,
-      company_name: form.companyName,
-      business_number: form.businessNumber,
-      hr_name: form.hrName,
-      hr_phone: form.hrPhone,
-      hr_email: form.hrEmail,
-      agree14: form.agree14,
-      agreeTerms: form.agreeTerms,
-      agreePrivacy: form.agreePrivacy,
-      agreeMarketing: form.agreeMarketing,
+      name: form.name,
+      birth: form.birth,
+      gender: form.gender === '남자' ? 'male' : 'female',
+      role: form.type === '멘토' ? 'mentor' : 'user',
+      agree_age: form.agree14,
+      agree_service: form.agreeTerms,
+      agree_personal_info: form.agreePrivacy,
+      agree_ad: form.agreeMarketing,
     };
 
     try {
-      const response = await fetch("http://192.168.226.45:8000/api/auth/signup/", {
+      const response = await fetch("http://192.168.225.44:8000/api/auth/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,6 +170,19 @@ export default function Signup() {
       console.log("서버 응답:", data);
 
       if (response.ok) {
+        // 회원가입한 정보를 localStorage에 저장 (개인 회원만)
+        if (accountType === "personal") {
+          const userInfo = {
+            type: form.type,
+            name: form.name,
+            birth: form.birth,
+            gender: form.gender,
+            email: form.email,
+            marketing: form.agreeMarketing ? '동의' : '비동의'
+          };
+          localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        }
+        
         alert("회원가입 성공!");
         navigate("/login");
       } else {
@@ -353,7 +374,7 @@ export default function Signup() {
             
             <label className="consent-item">
               <input type="checkbox" name="agreeMarketing" checked={form.agreeMarketing} onChange={handleChange}/>
-              <span><span className="required">[선택]</span> 광고성 정보 수신 동의</span>
+              <span><span className="optional">[선택]</span> 광고성 정보 수신 동의</span>
               <button type="button" className="expand-btn">내용보기 ∨</button>
             </label>
           </div>

@@ -370,6 +370,7 @@ body {
 
 .form-row input[type="text"],
 .form-row input[type="email"],
+.form-row input[type="password"],
 .form-row input[type="date"] {
   flex: 1;
   padding: 10px 12px;
@@ -643,5 +644,65 @@ body {
 }
 
 .create-spec-btn:hover {
+  background: #1d4ed8;
+}
+
+/* 개인정보 표시 영역 */
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.info-display {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.info-row {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  width: 150px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.info-value {
+  flex: 1;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.edit-btn-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.edit-info-btn {
+  padding: 12px 40px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.edit-info-btn:hover {
   background: #1d4ed8;
 }

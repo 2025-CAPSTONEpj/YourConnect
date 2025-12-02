@@ -39,19 +39,84 @@
   margin-top: 20px;
 }
 
-.ai-sidebar .profile-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: none;
-  border-radius: 0;
-  padding: 10px;
+/* 프로필 박스 - 홈페이지 스타일 */
+.ai-profile-box {
+  width: 100%;
+  max-width: 240px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  text-align: center;
   margin-bottom: 16px;
-  width: fit-content;
-  box-shadow: none;
 }
 
-.ai-sidebar .profile-img {
+.ai-profile-box.logged {
+  padding: 12px;
+}
+
+/* 로그아웃 상태 프로필 */
+.ai-profile-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.ai-profile-box.logged .ai-profile-content {
+  justify-content: flex-start;
+  margin-bottom: 0;
+  cursor: default;
+}
+
+.ai-profile-content:hover .ai-profile-text {
+  color: #9333EA;
+}
+
+.ai-user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ai-profile-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  pointer-events: none;
+  margin: 0;
+}
+
+.ai-profile-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.ai-footer-link {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.ai-footer-link:hover {
+  color: #9333EA;
+}
+
+.ai-divider {
+  width: 1px;
+  background-color: #d1d5db;
+  height: 16px;
+}
+
+/* 로그인 상태 프로필 */
+.ai-profile-img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -59,18 +124,22 @@
   flex-shrink: 0;
 }
 
-.ai-sidebar .profile-info {
+.ai-profile-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  align-items: flex-start;
 }
 
-.ai-sidebar .profile-box h3 {
+.ai-profile-name {
   margin: 0;
   font-size: 1rem;
+  font-weight: normal;
+  color: #1a1a1a;
+  text-align: left;
 }
 
-.ai-sidebar .profile-edit {
+.ai-profile-edit {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -78,9 +147,11 @@
   color: #666;
   text-decoration: none;
   cursor: pointer;
+  padding: 0;
+  background-color: transparent;
 }
 
-.ai-sidebar .profile-edit:hover {
+.ai-profile-edit:hover {
   color: #333;
 }
 

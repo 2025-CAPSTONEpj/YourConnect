@@ -115,11 +115,127 @@
 
 /* 사이드바 */
 .mentoring-aside {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   height: fit-content;
-  background: white;
+  background: transparent;
+}
+
+/* 프로필 박스 - 홈페이지 스타일 */
+.mentoring-profile-box {
+  width: 100%;
+  max-width: 240px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.mentoring-profile-box.logged {
+  padding: 12px;
+}
+
+/* 로그아웃 상태 프로필 */
+.mentoring-profile-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.mentoring-profile-box.logged .mentoring-profile-content {
+  justify-content: flex-start;
+  margin-bottom: 0;
+  cursor: default;
+}
+
+.mentoring-profile-content:hover .mentoring-profile-text {
+  color: #9333EA;
+}
+
+.mentoring-user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mentoring-profile-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  pointer-events: none;
+  margin: 0;
+}
+
+.mentoring-profile-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.mentoring-footer-link {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.mentoring-footer-link:hover {
+  color: #9333EA;
+}
+
+.mentoring-divider {
+  width: 1px;
+  background-color: #d1d5db;
+  height: 16px;
+}
+
+/* 로그인 상태 프로필 */
+.mentoring-profile-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.mentoring-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.mentoring-profile-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: normal;
+  color: #1a1a1a;
+  text-align: left;
+}
+
+.mentoring-profile-edit {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+}
+
+.mentoring-profile-edit:hover {
+  color: #333;
 }
 
 .mentoring-aside h4 {
