@@ -1,0 +1,376 @@
+/* AIInterview.css - index.css의 공통 스타일 사용 */
+
+.ai-interview-container {
+  min-height: 100vh;
+  background: #fff;
+  color: #222;
+}
+
+.ai-main {
+  display: grid;
+  grid-template-columns: 260px 1fr 1fr;
+  gap: 20px;
+  padding: 20px 40px;
+  height: calc(100vh - 100px);
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.ai-sidebar {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+}
+
+.ai-sidebar h3 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+
+.ai-sidebar h3:not(:first-of-type) {
+  margin-top: 20px;
+}
+
+/* 프로필 박스 - 홈페이지 스타일 */
+.ai-profile-box {
+  width: 100%;
+  max-width: 240px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.ai-profile-box.logged {
+  padding: 12px;
+}
+
+/* 로그아웃 상태 프로필 */
+.ai-profile-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.ai-profile-box.logged .ai-profile-content {
+  justify-content: flex-start;
+  margin-bottom: 0;
+  cursor: default;
+}
+
+.ai-profile-content:hover .ai-profile-text {
+  color: #9333EA;
+}
+
+.ai-user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ai-profile-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  pointer-events: none;
+  margin: 0;
+}
+
+.ai-profile-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.ai-footer-link {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.ai-footer-link:hover {
+  color: #9333EA;
+}
+
+.ai-divider {
+  width: 1px;
+  background-color: #d1d5db;
+  height: 16px;
+}
+
+/* 로그인 상태 프로필 */
+.ai-profile-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ai-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.ai-profile-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: normal;
+  color: #1a1a1a;
+  text-align: left;
+}
+
+.ai-profile-edit {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+}
+
+.ai-profile-edit:hover {
+  color: #333;
+}
+
+.ai-sidebar .memo {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  resize: vertical;
+  padding: 8px;
+  align-self: stretch;
+}
+
+.ai-sidebar .question-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+  align-self: stretch;
+}
+
+.ai-sidebar .search-input {
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.ai-sidebar .question-list,
+.ai-sidebar .fav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-self: stretch;
+}
+
+.ai-sidebar .question-item {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-sidebar .question-item:hover {
+  background: #f8f8f8;
+}
+
+.ai-sidebar .empty-message {
+  color: #999;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.ai-sidebar .star {
+  color: #ddd;
+  font-size: 1.2rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.ai-sidebar .star:hover {
+  color: #fbbf24;
+}
+
+.ai-sidebar .star.active {
+  color: gold;
+}
+
+/* Center column */
+.ai-center {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-center h2 {
+  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-center .generate-btn {
+  border: 1px solid #aaa;
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.ai-center .generate-btn:hover {
+  background: #f4f4f4;
+}
+
+.ai-center .question-section {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.ai-center .section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+.ai-center .question-list-box {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ai-center .question-row {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ai-center .question-row:hover {
+  background: #f8f8f8;
+}
+
+.ai-center .question-row.active {
+  background: #ede9fe;
+  border-color: #7c3aed;
+}
+
+/* Right column */
+.ai-right {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-right h2 {
+  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+}
+
+.ai-right .practice-section {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.ai-right .practice-section p {
+  margin: 0 0 10px 0;
+}
+
+.ai-right .practice-section textarea {
+  width: 100%;
+  height: 150px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.ai-right .btn-group {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.ai-right .btn-group button {
+  border: 1px solid #aaa;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.ai-right .btn-group button:hover {
+  background: #f4f4f4;
+}
+
+.ai-right h3 {
+  margin: 20px 0 10px 0;
+  font-size: 1rem;
+}
+
+.ai-right .feedback-box {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.9rem;
+  background: #fafafa;
+  flex: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.ai-right .feedback-box .feedback-text {
+  color: #2563eb;
+}

@@ -1,0 +1,150 @@
+/* 로그인 페이지 스타일 */
+.login-page-wrapper {
+  display: flex;
+  justify-content: center; /* 가로 중앙 */
+  align-items: center; /* 세로 중앙 */
+  min-height: 100vh; /* 화면 전체 높이 */
+  background-color: #f0f2f5; /* 배경색 */
+  /* 헤더가 고정되어 있다면 padding-top 등으로 조정이 필요할 수 있습니다. */
+}
+/* 중앙에 위치할 네모 박스 (로그인 카드) */
+.login-box {
+  background: white;
+  padding: 50px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.login-box h2 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 26px;
+}
+
+/* 입력창 그룹 */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* 로그인 버튼 */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
+/* 구분선 */
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #aaa;
+  margin: 20px 0;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+.separator:not(:empty)::before { margin-right: .25em; }
+.separator:not(:empty)::after { margin-left: .25em; }
+
+/* 소셜 로그인 버튼 */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  border: none;
+}
+
+.social-btn:hover { opacity: 0.9; }
+
+.google-btn {
+  background-color: #ffffff;
+  color: #444;
+  border: 1px solid #ddd;
+}
+
+.naver-btn {
+  background-color: #03C75A;
+  color: white;
+}
+
+.kakao-btn {
+  background-color: #FEE500;
+  color: #191919;
+}
+.login-logo {
+  max-width: 180px;
+  margin-bottom: 10px;
+}
+
+/* 하단 링크 스타일 */
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.footer-link {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #007bff;
+}
+
+.link-divider {
+  color: #ddd;
+} 

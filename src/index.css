@@ -1,0 +1,356 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont, 
+    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff;
+  color: #222;
+  font-size: 14px;
+}
+
+body::before {
+  content: '';
+  display: block;
+  height: 10px;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =========================
+   헤더 공통 스타일
+========================= */
+.header-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 2px solid #ddd;
+  background: #fff;
+  height: 80px;
+  margin-top: 10px;
+  position: sticky;
+  top: 10px;
+  z-index: 50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+}
+
+.logo-area a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  margin: 0;
+}
+
+.logo-img {
+  width: 110px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.menu-category-group {
+  display: flex;
+  gap: 190px;
+  align-items: center;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .menu-category-group {
+    display: none;
+  }
+}
+
+.menu-item {
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #222;
+  transition: color 0.2s;
+  padding: 0.5rem 1rem;
+}
+
+.hover-purple:hover {
+  color: #8b5cf6;
+}
+
+.auth-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+}
+
+/* =========================
+   버튼 공통 스타일
+========================= */
+.btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  display: inline-block;
+}
+
+.btn:hover,
+.btn:visited,
+.btn:active,
+.btn:focus {
+  text-decoration: none;
+}
+
+.btn-primary {
+  border: 1px solid #8b5cf6;
+  background: white;
+  color: #8b5cf6;
+}
+
+.btn-primary:hover {
+  background: #8b5cf6;
+  color: white;
+}
+
+.btn-secondary {
+  border: 1px solid #aaa;
+  background: white;
+  color: #222;
+}
+
+.btn-secondary:hover {
+  background: #f4f4f4;
+}
+
+/* =========================
+   모달 공통 스타일
+========================= */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 24px 28px;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 300px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.modal-content p {
+  font-size: 1.1rem;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.modal-content .save-btn {
+  padding: 10px 24px;
+}
+
+/* =========================
+   저장 버튼 공통 스타일
+========================= */
+.save-btn {
+  background: #2563eb;
+  color: white;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.save-btn:hover {
+  background: #1d4ed8;
+}
+
+.save-btn:active {
+  background: #1d4ed8;
+  transform: translateY(1px);
+}
+
+.save-btn:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+}
+
+/* =========================
+   프로필 이미지 공통 스타일
+========================= */
+.profile-img {
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+.profile-img svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+}
+
+/* =========================
+   그리드 버튼 공통 스타일
+========================= */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.grid button {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  color: #374151;
+  transform: scale(1);
+}
+
+.grid button:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.grid button.selected {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+  animation: selectPop 0.2s ease-out;
+}
+
+.grid button.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+}
+
+.grid button:active {
+  transform: scale(0.95);
+}
+
+.grid button:empty {
+  display: block;
+  width: 100%;
+  height: 1px;
+  padding: 0;
+  margin: 5px 0;
+  background: transparent;
+  border: none;
+  pointer-events: none;
+}
+
+.separator {
+  width: 100%;
+  height: 8px;
+  background: transparent;
+  border: none;
+  margin: 6px 0;
+  pointer-events: none;
+}
+
+@keyframes selectPop {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* =========================
+   섹션 공통 스타일
+========================= */
+section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #374151;
+}
+
+/* =========================
+   메인 콘텐츠 영역
+========================= */
+main {
+  min-height: calc(100vh - 80px);
+}
+
+/* =========================
+   반응형 디자인
+========================= */
+@media (max-width: 768px) {
+  .header-main {
+    padding: 0 20px;
+  }
+  
+  .menu-category-group {
+    gap: 50px;
+  }
+  
+  .grid {
+    gap: 8px;
+  }
+  
+  .grid button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}
