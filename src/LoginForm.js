@@ -14,7 +14,7 @@ function LoginForm() {
     console.log("로그인 요청:", username, password);
 
     try {
-      const response = await fetch("http://192.168.225.44:8000/api/auth/login/", {
+      const response = await fetch("http://localhost:8000/api/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -32,7 +32,7 @@ function LoginForm() {
 
         // 사용자 정보 가져오기
         try {
-          const userResponse = await fetch("http://192.168.225.44:8000/api/user/profile/", {
+          const userResponse = await fetch("http://localhost:8000/api/user/profile/", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

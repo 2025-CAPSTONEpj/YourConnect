@@ -7,12 +7,12 @@ function ProfileSetting() {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     type: '일반',
-    name: '이가윤',
-    birth: '1998-05-15',
-    gender: '여자',
-    email: 'example@email.com',
+    name: '',
+    birth: '',
+    gender: '',
+    email: '',
     password: '',
-    marketing: '동의'
+    marketing: ''
   });
 
   useEffect(() => {

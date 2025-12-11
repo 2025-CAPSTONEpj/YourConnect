@@ -8,7 +8,6 @@ function Spec() {
     selectedDuties: [],
     selectedSubDuty: null,
     selectedPosition: null,
-    selectedCompanyType: null,
     selectedRegion: null,
     editingSpecId: null
   });
@@ -23,7 +22,7 @@ function Spec() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = 'http://192.168.225.44:8000';
+  const API_BASE_URL = 'http://localhost:8000';
 
   const data = {
     duties: ["개발", "데이터", "인공지능/머신러닝", "디자인", "QA/테스트"],
@@ -35,7 +34,6 @@ function Spec() {
       "QA/테스트": ["QA", "테스트 엔지니어"]
     },
     positions: ["신입", "주임", "대리", "과장", "차장", "부장", "임원"],
-    companyTypes: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"],
     regions: [
       "서울", "경기", "인천", "대전", "세종", "충남", "충북", "광주",
       "전남", "전북", "대구", "경북", "부산", "울산", "경남", "강원", "제주"
@@ -214,7 +212,6 @@ function Spec() {
       companyName: companyName.trim(),
       career: careerString,
       position: state.selectedPosition || '',
-      companyType: state.selectedCompanyType || '',
       region: state.selectedRegion || '',
       savedAt: new Date().toISOString()
     };
@@ -253,7 +250,6 @@ function Spec() {
       selectedDuties: [],
       selectedSubDuty: null,
       selectedPosition: null,
-      selectedCompanyType: null,
       selectedRegion: null,
       showDetailBox: false,
       showAdditionalBox: false,
@@ -285,7 +281,6 @@ function Spec() {
         selectedDuties: duty ? [duty] : [],
         selectedSubDuty: subDuty || null,
         selectedPosition: spec.position || null,
-        selectedCompanyType: spec.companyType || null,
         selectedRegion: spec.region || null,
         showDetailBox: !!duty,
         showAdditionalBox: !!subDuty,
@@ -404,11 +399,6 @@ function Spec() {
                         <strong>경력:</strong> {spec.career}
                       </div>
                     )}
-                    {spec.companyType && (
-                      <div className="spec-item">
-                        <strong>기업형태:</strong> {spec.companyType}
-                      </div>
-                    )}
                     {spec.region && (
                       <div className="spec-item">
                         <strong>지역:</strong> {spec.region}
@@ -506,13 +496,6 @@ function Spec() {
             <h3>직급/직책</h3>
             <div className="grid" id="positions-grid">
               {renderSelectionButtons(data.positions, state.selectedPosition, 'selectedPosition')}
-            </div>
-          </section>
-
-          <section>
-            <h3>기업형태</h3>
-            <div className="grid" id="company-types-grid">
-              {renderSelectionButtons(data.companyTypes, state.selectedCompanyType, 'selectedCompanyType')}
             </div>
           </section>
 

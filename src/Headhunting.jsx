@@ -8,7 +8,6 @@ function Headhunting() {
     selectedRanks: [],
     selectedCareers: [],
     selectedJobs: [],
-    selectedCompanies: [],
     selectedRegions: [],
     searchKeyword: '',
     currentPage: 1,
@@ -19,9 +18,9 @@ function Headhunting() {
   const [expandedSpecs, setExpandedSpecs] = useState({});
   const [selectedMainJob, setSelectedMainJob] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState({ name: '이가윤' });
+  const [userInfo, setUserInfo] = useState({ name: '' });
 
-  const API_BASE_URL = 'http://192.168.226.44:8000';
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -35,7 +34,7 @@ function Headhunting() {
     if (savedUserInfo) {
       try {
         const parsed = JSON.parse(savedUserInfo);
-        setUserInfo({ name: parsed.name || '이가윤' });
+        setUserInfo({ name: parsed.name || '' });
       } catch (e) {
         console.error('사용자 정보 로드 오류:', e);
       }
@@ -62,7 +61,6 @@ function Headhunting() {
         "QA/테스트": ["QA", "테스트 엔지니어"]
       },
       careers: ["1년~3년", "3년~5년", "5년~7년", "7년~10년", "10년~15년", "15년~"],
-      companies: ["대기업", "중견기업", "중소기업", "외국계", "공기업", "벤처기업"],
       regions: [
         "서울", "경기", "인천", "대전", "세종", "충남", "충북", "광주",
         "전남", "전북", "대구", "경북", "부산", "울산", "경남", "강원", "제주"
@@ -101,8 +99,9 @@ function Headhunting() {
   ];
 
   const [collapsedJobs, setCollapsedJobs] = useState(true);
-  const [visibleCards, setVisibleCards] = useState(jobPostings);
-  const [totalCount, setTotalCount] = useState(jobPostings.length);
+  const [visibleCards, setVisibleCards] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [allSearchResults, setAllSearchResults] = useState([]); // 크롤링된 전체 결과 저장
 
   // Helper: parse years from job info string
   const extractYears = (job) => {
@@ -171,12 +170,6 @@ function Headhunting() {
     return selectedRanks.some(r => text.includes(r));
   };
 
-  const matchesCompanyType = (job, selectedCompanies) => {
-    if (selectedCompanies.length === 0) return true;
-    const text = (job.title + ' ' + job.info);
-    return selectedCompanies.some(c => text.includes(c));
-  };
-
   useEffect(() => {
     // Load specs from localStorage
     const loadSpecs = () => {
@@ -225,8 +218,7 @@ function Headhunting() {
     const maxSelections = {
       ranks: 1, // 직급 단일 선택
       careers: 1,
-      jobs: 1,  // 세부직무 단일 선택
-      companies: 2,
+      jobs: 3,  // 세부직무 최대 3개 선택
       regions: 2
     };
     return maxSelections[category];
@@ -283,7 +275,13 @@ function Headhunting() {
   };
 
   useEffect(() => {
-    // Filtering logic applying all selected criteria
+    // 크롤링 결과가 있으면 그 결과로만 페이지네이션 (더미 데이터 무시)
+    if (allSearchResults.length > 0) {
+      console.log(`✅ 크롤링 결과로 페이지네이션: ${allSearchResults.length}건`);
+      return; // 크롤링 결과가 있으면 아래 로직 스킵
+    }
+
+    // 크롤링 결과가 없을 때만 더미 데이터로 필터링 (검색 버튼 누르기 전)
     const keyword = state.searchKeyword.toLowerCase();
     const selectedRange = state.selectedCareers[0];
     const selectedSubDuty = state.selectedJobs[0];
@@ -296,7 +294,6 @@ function Headhunting() {
       if (!matchesCareerRange(job, selectedRange)) return false;
       if (!matchesRegion(job, state.selectedRegions)) return false;
       if (!matchesRank(job, state.selectedRanks)) return false;
-      if (!matchesCompanyType(job, state.selectedCompanies)) return false;
       return true;
     });
 
@@ -304,31 +301,135 @@ function Headhunting() {
     const startIdx = (state.currentPage - 1) * state.itemsPerPage;
     const endIdx = startIdx + state.itemsPerPage;
     setVisibleCards(filtered.slice(startIdx, endIdx));
-  }, [state.searchKeyword, state.selectedRanks, state.selectedCareers, state.selectedJobs, state.selectedCompanies, state.selectedRegions, state.currentPage, selectedMainJob]);
+  }, [state.searchKeyword, state.selectedRanks, state.selectedCareers, state.selectedJobs, state.selectedRegions, state.currentPage, selectedMainJob, allSearchResults]);
 
-  const handleSearch = () => {
-    const input = document.getElementById('search-input');
-    if (!input.value.trim()) {
-      alert('검색어를 작성해주세요.');
+  const handleSearch = async () => {
+    // 선택된 조건이 있는지 확인
+    if (!selectedMainJob && state.selectedJobs.length === 0 && state.selectedRanks.length === 0 && 
+        state.selectedCareers.length === 0 && state.selectedRegions.length === 0) {
+      alert('직무, 직급, 경력, 또는 지역 중 최소 하나를 선택해주세요.');
       return;
     }
-    setState(prev => ({ ...prev, searchKeyword: input.value.trim(), currentPage: 1 }));
+
+    try {
+      // 로딩 상태 표시
+      const btn = document.querySelector('.search-btn-large');
+      const originalText = btn.textContent;
+      btn.textContent = '검색 중...';
+      btn.disabled = true;
+
+      // 크롤러에 보낼 데이터 준비
+      const crawlerParams = {
+        duty: selectedMainJob || '',
+        subDuties: state.selectedJobs, // 배열로 여러 개 전송
+        position: '',  // 직급 제거
+        career: state.selectedCareers[0] || '',  // 경력 추가
+        region: state.selectedRegions[0] || ''
+      };
+
+      console.log('🔍 크롤러 요청:', crawlerParams);
+
+      // 1. 크롤러 실행 요청
+      const crawlResponse = await fetch(`${API_BASE_URL}/api/crawl-filters/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
+        },
+        body: JSON.stringify(crawlerParams)
+      });
+
+      if (!crawlResponse.ok) {
+        throw new Error(`크롤링 요청 실패: ${crawlResponse.status}`);
+      }
+
+      const crawlResult = await crawlResponse.json();
+      console.log('✅ 크롤링 응답:', crawlResult);
+
+      // 2. 크롤링 완료 대기 (3초 후 결과 조회)
+      btn.textContent = '결과를 가져오는 중...';
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // 3. 크롤링 결과 조회 - Django API를 통해 JSON 반환
+      const resultsParams = new URLSearchParams({
+        duty: selectedMainJob || '',
+        subDuties: state.selectedJobs.join(','),
+        career: state.selectedCareers[0] || '',
+        region: state.selectedRegions[0] || ''
+      });
+
+      const resultsResponse = await fetch(
+        `${API_BASE_URL}/api/crawl-results/?${resultsParams}`
+      );
+
+      if (!resultsResponse.ok) {
+        throw new Error('결과 조회 실패');
+      }
+
+      const resultsData = await resultsResponse.json();
+      console.log('📊 크롤링 결과:', resultsData);
+      
+      // 4. 결과를 state에 저장하고 UI에 표시
+      if (resultsData.jobs && resultsData.jobs.length > 0) {
+        console.log('📋 첫 번째 공고 데이터:', resultsData.jobs[0]);
+        console.log('🔍 experience 필드:', resultsData.jobs[0].experience);
+        // 전체 데이터를 state에 저장 (페이지네이션용)
+        setAllSearchResults(resultsData.jobs);
+        setState(prev => ({
+          ...prev,
+          currentPage: 1
+        }));
+        setVisibleCards(resultsData.jobs.slice(0, state.itemsPerPage));
+        setTotalCount(resultsData.count);
+        alert(`🎉 ${resultsData.count}개의 채용공고를 찾았습니다!`);
+      } else {
+        setVisibleCards([]);
+        setTotalCount(0);
+        setAllSearchResults([]);
+        alert('조건에 맞는 채용공고가 없습니다.');
+      }
+
+    } catch (error) {
+      console.error('❌ 오류:', error);
+      alert('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      const btn = document.querySelector('.search-btn-large');
+      btn.textContent = '조건으로 검색';
+      btn.disabled = false;
+    }
   };
 
   const handleReset = () => {
-    const input = document.getElementById('search-input');
-    input.value = '';
     setState(prev => ({
       ...prev,
       searchKeyword: '',
       selectedRanks: [],
       selectedCareers: [],
       selectedJobs: [],
-      selectedCompanies: [],
       selectedRegions: [],
       currentPage: 1
     }));
+    setSelectedMainJob(null);
+    setAllSearchResults([]);
+    setVisibleCards([]);
+    setTotalCount(0);
   };
+
+  const handlePageChange = (newPage) => {
+    console.log(`📄 페이지 변경: ${state.currentPage} → ${newPage}`);
+    console.log(`📊 전체 결과 수: ${allSearchResults.length}, 현재 페이지: ${newPage}`);
+    const startIdx = (newPage - 1) * state.itemsPerPage;
+    const endIdx = startIdx + state.itemsPerPage;
+    const pageResults = allSearchResults.slice(startIdx, endIdx);
+    console.log(`🔍 ${startIdx}~${endIdx} 범위: ${pageResults.length}건`);
+    setVisibleCards(pageResults);
+    setState(prev => ({
+      ...prev,
+      currentPage: newPage
+    }));
+  };
+
+  const totalPages = Math.ceil(totalCount / state.itemsPerPage);
 
   const toggleSpecExpand = (specId) => {
     setExpandedSpecs(prev => ({
@@ -353,11 +454,6 @@ function Headhunting() {
       } else {
         newState.selectedJobs = [];
       }
-    }
-
-    // 기업형태 (최대 2 유지)
-    if (spec.companyType && data.companies.includes(spec.companyType)) {
-      newState.selectedCompanies = [spec.companyType];
     }
 
     // 지역 (최대 2 유지)
@@ -448,7 +544,7 @@ function Headhunting() {
       </aside>
 
       <div className="headhunt-content">
-        <h2>헤드헌팅 채용 정보</h2>
+        <h2 style={{ marginTop: '40px', marginBottom: '20px', fontSize: '1.8rem' }}>헤드헌팅 채용 정보</h2>
         
         {/* 보유 스펙 박스 */}
         <div className="spec-summary-section">
@@ -502,10 +598,6 @@ function Headhunting() {
                               <span className="spec-value">{spec.position || '-'}</span>
                             </div>
                             <div className="spec-detail-row">
-                              <span className="spec-label">기업형태:</span>
-                              <span className="spec-value">{spec.companyType || '-'}</span>
-                            </div>
-                            <div className="spec-detail-row">
                               <span className="spec-label">근무지역:</span>
                               <span className="spec-value">{spec.region || '-'}</span>
                             </div>
@@ -552,12 +644,7 @@ function Headhunting() {
           </div>
 
           <div className="filter-group">
-            <label>직급 ({state.selectedRanks.length}/1)</label>
-            <div className="grid">{renderButtons('ranks')}</div>
-          </div>
-
-          <div className="filter-group">
-            <label>세부 직무</label>
+            <label>세부 직무 ({state.selectedJobs.length}/3)</label>
             <div className="grid" id="headhunt-sub-duty-grid">
               {selectedMainJob ? (
                 data.subDuties[selectedMainJob].map(sub => {
@@ -566,7 +653,7 @@ function Headhunting() {
                     <button
                       key={sub}
                       className={isSelected ? 'selected' : ''}
-                      disabled={isSelected ? false : state.selectedJobs.length >= 1}
+                      disabled={isSelected ? false : state.selectedJobs.length >= 3}
                       onClick={() => toggleSelect('jobs', sub)}
                     >{sub}</button>
                   );
@@ -583,12 +670,6 @@ function Headhunting() {
             <label>경력 ({state.selectedCareers.length}/1)</label>
             <div className="grid">{renderButtons('careers')}</div>
           </div>
-          {/* 기업형태 / 지역 필터 */}
-
-          <div className="filter-group">
-            <label>기업형태 ({state.selectedCompanies.length}/2)</label>
-            <div className="grid">{renderButtons('companies')}</div>
-          </div>
 
           <div className="filter-group">
             <label>근무지역 ({state.selectedRegions.length}/2)</label>
@@ -598,22 +679,20 @@ function Headhunting() {
           <section className="selected">
             <label>선택된 조건</label>
             <div className="selected-chips">
-              {[...state.selectedRanks, ...state.selectedCareers, ...state.selectedJobs, ...state.selectedCompanies, ...state.selectedRegions].map(chip => (
+              {[...state.selectedRanks, ...state.selectedCareers, ...state.selectedJobs, ...state.selectedRegions].map(chip => (
                 <span key={chip} className="chip">{chip}</span>
               ))}
             </div>
-            {(state.selectedRanks.length + state.selectedCareers.length + state.selectedJobs.length + state.selectedCompanies.length + state.selectedRegions.length) === 0 && (
+            {(state.selectedRanks.length + state.selectedCareers.length + state.selectedJobs.length + state.selectedRegions.length) === 0 && (
               <p className="selected-placeholder">현재 선택된 조건이 없습니다.</p>
             )}
           </section>
-        </section>
 
-        <div className="filter-group search-group">
-          <label>검색어</label>
-          <input type="text" id="search-input" placeholder="채용직무, 기업명, 키워드 등을 입력하세요." />
-          <button className="search-btn" onClick={handleSearch}>검색</button>
-          <button className="reset-btn" onClick={handleReset}>초기화</button>
-        </div>
+          <div className="filter-group search-action-group">
+            <button className="search-btn search-btn-large" onClick={handleSearch}>조건으로 검색</button>
+            <button className="reset-btn reset-btn-large" onClick={handleReset}>초기화</button>
+          </div>
+        </section>
 
         <section className="job-list">
           <h3 id="total-count">총 {totalCount}건</h3>
@@ -622,25 +701,146 @@ function Headhunting() {
             <div key={idx} className="job-card">
               <div className="job-info">
                 <h4>{job.title}</h4>
-                <p>{job.info}</p>
+                <div className="job-details">
+                  <p><strong>회사:</strong> {job.company || '-'}</p>
+                  <p><strong>지역:</strong> {job.location || '-'}</p>
+                  <p><strong>마감:</strong> {job.deadline || '-'}</p>
+                  {job.source && <p><strong>출처:</strong> {job.source}</p>}
+                </div>
               </div>
-              <button className="apply-btn">지원 공고 확인</button>
+              <button 
+                className="apply-btn"
+                onClick={() => {
+                  if (job.link) {
+                    window.open(job.link, '_blank');
+                  }
+                }}
+              >
+                지원 공고 확인
+              </button>
             </div>
           ))}
 
-          <div className="pagination" style={{ display: totalCount > 0 ? 'flex' : 'none' }}>
-            <button className="pagination-prev" disabled={state.currentPage <= 1} onClick={() => setState(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}>{'<'}</button>
-            {[1, 2, 3, 4, 5].map(page => (
-              <button
-                key={page}
-                className={`pagination-num ${page === state.currentPage ? 'active' : ''}`}
-                onClick={() => setState(prev => ({ ...prev, currentPage: page }))}
+          {totalCount > 0 && (
+            <div className="pagination" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '30px', alignItems: 'center' }}>
+              {/* 맨 처음 페이지로 */}
+              <button 
+                className="pagination-edge" 
+                disabled={state.currentPage <= 1} 
+                onClick={() => handlePageChange(1)}
+                title="맨 처음 페이지"
+                style={{
+                  padding: '8px 12px',
+                  border: '1px solid #ccc',
+                  backgroundColor: '#f9f9f9',
+                  cursor: state.currentPage <= 1 ? 'not-allowed' : 'pointer',
+                  borderRadius: '4px',
+                  opacity: state.currentPage <= 1 ? 0.5 : 1,
+                  fontWeight: 'bold'
+                }}
               >
-                {page}
+                {'⏮'}
               </button>
-            ))}
-            <button className="pagination-next" disabled={state.currentPage >= 5} onClick={() => setState(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}>{'>'}</button>
-          </div>
+
+              {/* 이전 페이지 그룹 (4개 이전) */}
+              <button 
+                className="pagination-group-prev" 
+                disabled={state.currentPage <= 1} 
+                onClick={() => {
+                  const pageStart = Math.max(1, state.currentPage - 5);
+                  handlePageChange(Math.max(1, pageStart - 4));
+                }}
+                title="이전 페이지 그룹"
+                style={{
+                  padding: '8px 12px',
+                  border: '1px solid #ccc',
+                  backgroundColor: '#f9f9f9',
+                  cursor: state.currentPage <= 1 ? 'not-allowed' : 'pointer',
+                  borderRadius: '4px',
+                  opacity: state.currentPage <= 1 ? 0.5 : 1,
+                  fontWeight: 'bold'
+                }}
+              >
+                {'◀◀'}
+              </button>
+              
+              {/* 페이지 번호 그룹 (4개씩 표시) */}
+              {(() => {
+                const pages = [];
+                const pageStart = Math.max(1, state.currentPage - 2);
+                const pageEnd = Math.min(totalPages, pageStart + 4);
+                
+                for (let i = pageStart; i <= pageEnd; i++) {
+                  pages.push(
+                    <button
+                      key={i}
+                      className={`pagination-num ${i === state.currentPage ? 'active' : ''}`}
+                      onClick={() => handlePageChange(i)}
+                      style={{
+                        padding: '8px 12px',
+                        border: i === state.currentPage ? '2px solid #007bff' : '1px solid #ccc',
+                        backgroundColor: i === state.currentPage ? '#007bff' : '#fff',
+                        color: i === state.currentPage ? '#fff' : '#000',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        fontWeight: i === state.currentPage ? 'bold' : 'normal'
+                      }}
+                    >
+                      {i}
+                    </button>
+                  );
+                }
+                return pages;
+              })()}
+
+              {/* 다음 페이지 그룹 (4개 다음) */}
+              <button 
+                className="pagination-group-next" 
+                disabled={state.currentPage >= totalPages} 
+                onClick={() => {
+                  const pageStart = Math.max(1, state.currentPage - 2);
+                  const nextStart = Math.min(totalPages, pageStart + 5);
+                  handlePageChange(nextStart);
+                }}
+                title="다음 페이지 그룹"
+                style={{
+                  padding: '8px 12px',
+                  border: '1px solid #ccc',
+                  backgroundColor: '#f9f9f9',
+                  cursor: state.currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                  borderRadius: '4px',
+                  opacity: state.currentPage >= totalPages ? 0.5 : 1,
+                  fontWeight: 'bold'
+                }}
+              >
+                {'▶▶'}
+              </button>
+
+              {/* 맨 마지막 페이지로 */}
+              <button 
+                className="pagination-edge-end" 
+                disabled={state.currentPage >= totalPages} 
+                onClick={() => handlePageChange(totalPages)}
+                title="맨 마지막 페이지"
+                style={{
+                  padding: '8px 12px',
+                  border: '1px solid #ccc',
+                  backgroundColor: '#f9f9f9',
+                  cursor: state.currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                  borderRadius: '4px',
+                  opacity: state.currentPage >= totalPages ? 0.5 : 1,
+                  fontWeight: 'bold'
+                }}
+              >
+                {'⏭'}
+              </button>
+
+              {/* 페이지 정보 표시 */}
+              <span style={{ marginLeft: '20px', fontSize: '0.9rem', color: '#666' }}>
+                {state.currentPage} / {totalPages}
+              </span>
+            </div>
+          )}
         </section>
       </div>
     </main>

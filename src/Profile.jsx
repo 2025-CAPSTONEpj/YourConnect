@@ -9,14 +9,14 @@ function Profile() {
   const [error, setError] = useState(null);
   const [userInfo, setUserInfo] = useState({
     type: '일반',
-    name: '이가윤',
-    birth: '1998-05-15',
-    gender: '여자',
-    email: 'example@email.com',
-    marketing: '동의'
+    name: '',
+    birth: '',
+    gender: '',
+    email: '',
+    marketing: ''
   });
 
-  const API_BASE_URL = 'http://192.168.225.44:8000';
+  const API_BASE_URL = 'http://localhost:8000';
 
   useEffect(() => {
     loadAndDisplaySpecs();
