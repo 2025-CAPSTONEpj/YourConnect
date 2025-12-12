@@ -196,4 +196,85 @@ input[type="date"]:focus {
   .profilesetting-title {
     font-size: 20px;
   }
+
+  .spec-selection-list {
+    max-height: 300px;
+  }
+}
+
+/* 보유 스펙 선택 */
+.spec-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f9fafb;
+}
+
+.spec-selection-item {
+  border-radius: 6px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.spec-selection-item label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.spec-selection-item input[type="radio"] {
+  margin-top: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.spec-selection-item .spec-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.spec-selection-item .spec-info strong {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.spec-selection-item .spec-info span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.spec-selection-item .career-badge,
+.spec-selection-item .region-badge {
+  display: inline-block;
+  background: #e0e7ff;
+  color: #4c51bf;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  width: fit-content;
+}
+
+.spec-selection-item .region-badge {
+  background: #dbeafe;
+  color: #0284c7;
+}
+
+.spec-selection-item:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.spec-selection-item input[type="radio"]:checked + .spec-info {
+  color: #3b82f6;
 }

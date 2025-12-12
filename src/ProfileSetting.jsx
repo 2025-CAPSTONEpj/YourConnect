@@ -5,6 +5,8 @@ import './ProfileSetting.css';
 function ProfileSetting() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [specs, setSpecs] = useState([]);
+  const [selectedSpecId, setSelectedSpecId] = useState(null);
   const [form, setForm] = useState({
     type: '일반',
     name: '',
@@ -12,8 +14,19 @@ function ProfileSetting() {
     gender: '',
     email: '',
     password: '',
-    marketing: ''
+    marketing: '비동의'
   });
+
+  const API_BASE_URL = 'http://localhost:8000';
+
+  const duties = ["개발", "데이터", "인공지능/머신러닝", "디자인", "QA/테스트"];
+  const subDuties = {
+    "개발": ["FE", "BE", "APP"],
+    "데이터": ["데이터 분석가", "데이터 엔지니어", "머신러닝 엔지니어"],
+    "인공지능/머신러닝": ["머신러닝 엔지니어", "AI 연구원", "데이터 사이언티스트"],
+    "디자인": ["UIUX", "BX", "그래픽 디자이너", "모션 디자이너"],
+    "QA/테스트": ["QA", "테스트 엔지니어"]
+  };
 
   useEffect(() => {
     // localStorage에서 기존 개인정보 불러오기
@@ -21,16 +34,67 @@ function ProfileSetting() {
     if (savedUserInfo) {
       try {
         const parsed = JSON.parse(savedUserInfo);
+        console.log('📋 localStorage에서 로드:', parsed);
         setForm({
           ...form,
           ...parsed,
-          password: '' // 비밀번호는 빈 값으로 유지
+          password: '', // 비밀번호는 빈 값으로 유지
+          marketing: parsed.marketing || '비동의' // 기본값 설정
         });
       } catch (e) {
         console.error('개인정보 로드 오류:', e);
       }
     }
+
+    // API에서 보유 스펙 불러오기
+    loadSpecs();
   }, []);
+
+  const loadSpecs = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      
+      const response = await fetch(`${API_BASE_URL}/api/specs/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        console.error('스펙 로드 실패:', response.status);
+        return;
+      }
+      
+      const data = await response.json();
+      if (data.specs && data.specs.length > 0) {
+        const formattedSpecs = data.specs.map(spec => {
+          let duty = '';
+          let subDuty = '';
+          
+          if (spec.description) {
+            const parts = spec.description.split(' - ');
+            duty = parts[0] || '';
+            subDuty = parts[1] || '';
+          }
+          
+          return {
+            id: spec.id,
+            duty: duty,
+            subDuty: subDuty,
+            companyName: spec.company,
+            career: spec.career_type || '경력 없음',
+            position: spec.role,
+            region: spec.region || ''
+          };
+        });
+        setSpecs(formattedSpecs);
+      }
+    } catch (e) {
+      console.error('Error loading specs:', e);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,7 +111,7 @@ function ProfileSetting() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!form.name) {
@@ -81,6 +145,47 @@ function ProfileSetting() {
     };
     
     localStorage.setItem('userInfo', JSON.stringify(userInfoToSave));
+    console.log('💾 localStorage에 저장:', userInfoToSave);
+    
+    // 서버에도 저장
+    try {
+      const token = localStorage.getItem('access_token');
+      const genderValue = form.gender === '남자' ? 'male' : 'female';
+      
+      const updateData = {
+        name: form.name,
+        birth: form.birth,
+        gender: genderValue,
+        role: form.type === '멘토' ? 'mentor' : 'user',
+        agree_ad: form.marketing === '동의'
+      };
+      
+      console.log('📤 서버로 전송할 데이터:', updateData);
+      
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('서버 응답 오류:', errorData);
+        alert('서버 저장 실패: ' + JSON.stringify(errorData));
+        return;
+      }
+      
+      const responseData = await response.json();
+      console.log('✅ 서버에 저장 성공:', responseData);
+      alert('개인정보가 저장되었습니다!');
+    } catch (e) {
+      console.error('❌ 서버 저장 오류:', e);
+      alert('서버 저장 중 오류 발생: ' + e.message);
+      return;
+    }
     
     alert('개인정보가 저장되었습니다.');
     navigate('/profile');
@@ -226,6 +331,35 @@ function ProfileSetting() {
               </label>
             </div>
           </div>
+
+          {/* 보유 스펙 선택 */}
+          {specs.length > 0 && (
+            <div className="form-section">
+              <label className="form-label">보유 스펙</label>
+              <div className="spec-selection-list">
+                {specs.map(spec => (
+                  <div key={spec.id} className="spec-selection-item">
+                    <label>
+                      <input
+                        type="radio"
+                        name="selectedSpec"
+                        value={spec.id}
+                        checked={selectedSpecId === spec.id}
+                        onChange={(e) => setSelectedSpecId(parseInt(e.target.value))}
+                      />
+                      <div className="spec-info">
+                        <strong>{spec.companyName}</strong>
+                        {spec.duty && <span>{spec.duty}</span>}
+                        {spec.subDuty && <span> - {spec.subDuty}</span>}
+                        {spec.career && <span className="career-badge">{spec.career}</span>}
+                        {spec.region && <span className="region-badge">{spec.region}</span>}
+                      </div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 버튼 영역 */}
           <div className="button-group">

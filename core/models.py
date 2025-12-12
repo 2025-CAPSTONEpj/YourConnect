@@ -78,11 +78,31 @@ class Experience(models.Model):
         ('프로젝트', '프로젝트'),
         ('기타', '기타'),
     ]
+    REGION_CHOICES = [
+        ('서울', '서울'),
+        ('경기', '경기'),
+        ('인천', '인천'),
+        ('대전', '대전'),
+        ('세종', '세종'),
+        ('충남', '충남'),
+        ('충북', '충북'),
+        ('광주', '광주'),
+        ('전남', '전남'),
+        ('전북', '전북'),
+        ('대구', '대구'),
+        ('경북', '경북'),
+        ('부산', '부산'),
+        ('울산', '울산'),
+        ('경남', '경남'),
+        ('강원', '강원'),
+        ('제주', '제주'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     company = models.CharField(max_length=100)
     role = models.CharField(max_length=100)
     career_type = models.CharField(max_length=20, choices=CAREER_TYPE_CHOICES, blank=True, null=True)
     skills = models.TextField(blank=True, null=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True, default='')
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)

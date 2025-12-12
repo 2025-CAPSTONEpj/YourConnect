@@ -41,30 +41,76 @@ function Spec() {
   };
 
   useEffect(() => {
+    // 페이지 로드 시 스펙 로드
+    console.log('🔄 Spec component mounted, loading specs...');
     loadSpecs();
   }, []);
 
-  const loadSpecs = () => {
+  const loadSpecs = async () => {
     try {
       setLoading(true);
-      const savedSpecs = localStorage.getItem('userSpecs');
-      console.log('📦 Loaded specs from localStorage:', savedSpecs);
       
-      if (savedSpecs) {
-        const parsed = JSON.parse(savedSpecs);
-        const specsArray = Array.isArray(parsed) ? parsed : [parsed];
-        const withIds = specsArray.map((spec, idx) => ({
-          ...spec,
-          id: spec.id || `spec-${Date.now()}-${idx}`
-        }));
-        console.log('✅ Parsed specs:', withIds);
-        setSpecs(withIds);
+      // localStorage에서 이전 사용자의 스펙 데이터 정리
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('userSpecs_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      const token = localStorage.getItem('access_token');
+      console.log('🔑 Token being used:', token);
+      
+      const response = await fetch(`${API_BASE_URL}/api/specs/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`스펙 로드 실패: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('📦 Full API response:', data);
+      console.log('📦 Loaded specs from server:', data.specs);
+      console.log('📊 Current logged-in user from token:', token ? token.substring(0, 20) + '...' : 'NO TOKEN');
+      
+      if (data.specs && data.specs.length > 0) {
+        const formattedSpecs = data.specs.map(spec => {
+          // description에서 duty와 subDuty 파싱 (형식: "개발 - FE")
+          let duty = '';
+          let subDuty = '';
+          
+          if (spec.description) {
+            const parts = spec.description.split(' - ');
+            duty = parts[0] || '';
+            subDuty = parts[1] || '';
+          }
+          
+          return {
+            id: spec.id,
+            duty: duty,
+            subDuty: subDuty,
+            companyName: spec.company,
+            career: spec.career_type || '경력 없음',
+            position: spec.role,
+            region: spec.region || '',
+            skills: spec.skills || '',
+            savedAt: spec.created_at
+          };
+        });
+        console.log('✅ Formatted specs:', formattedSpecs);
+        setSpecs(formattedSpecs);
       } else {
-        console.log('❌ No specs found in localStorage');
+        console.log('❌ No specs found');
         setSpecs([]);
       }
     } catch (e) {
       console.error('⚠️ Error loading specs:', e);
+      setError(e.message);
       setSpecs([]);
     } finally {
       setLoading(false);
@@ -123,8 +169,10 @@ function Spec() {
   };
 
   const selectItem = (item, stateKey) => {
+    console.log(`🔘 Selecting item: ${item}, stateKey: ${stateKey}`);
     setState(prevState => {
       const currentValue = prevState[stateKey];
+      console.log(`   Current value: ${currentValue}, New value: ${currentValue === item ? 'null' : item}`);
       return {
         ...prevState,
         [stateKey]: currentValue === item ? null : item
@@ -179,7 +227,7 @@ function Spec() {
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // 필수 필드 검증
     if (!state.selectedDuties || state.selectedDuties.length === 0) {
       alert('직무를 선택해주세요.');
@@ -194,6 +242,7 @@ function Spec() {
     const years = parseInt(careerYears) || 0;
     const months = parseInt(careerMonths) || 0;
 
+    // 경력 문자열 생성
     let careerString = '';
     if (years === 0 && months === 0) {
       careerString = '경력 없음';
@@ -205,45 +254,50 @@ function Spec() {
       careerString = `${years}년 ${months}개월`;
     }
 
+    // 경력 기간을 기반으로 start_date와 end_date 계산
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - years);
+    startDate.setMonth(startDate.getMonth() - months);
+
     const newSpec = {
-      id: state.editingSpecId || `spec-${Date.now()}`,
-      duty: state.selectedDuties[0] || '',
-      subDuty: state.selectedSubDuty || '',
-      companyName: companyName.trim(),
-      career: careerString,
-      position: state.selectedPosition || '',
+      company: companyName.trim(),
+      role: state.selectedPosition || '',
       region: state.selectedRegion || '',
-      savedAt: new Date().toISOString()
+      start_date: startDate.toISOString().split('T')[0],
+      end_date: endDate.toISOString().split('T')[0],
+      career_type: careerString,
+      skills: state.selectedSubDuty || '',
+      description: `${state.selectedDuties[0]} - ${state.selectedSubDuty}`
     };
 
-    console.log('💾 Saving new spec:', newSpec);
+    console.log('💾 Saving new spec to server:', newSpec);
 
-    let specsArray = [];
-    const savedSpecs = localStorage.getItem('userSpecs');
-    if (savedSpecs) {
-      try {
-        const parsed = JSON.parse(savedSpecs);
-        specsArray = Array.isArray(parsed) ? parsed : [parsed];
-      } catch (e) {
-        specsArray = [];
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${API_BASE_URL}/api/specs/save/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newSpec)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '스펙 저장 실패');
       }
-    }
 
-    if (state.editingSpecId) {
-      // 수정 모드
-      const index = specsArray.findIndex(s => s.id === state.editingSpecId);
-      if (index !== -1) {
-        specsArray[index] = newSpec;
-        console.log('🔄 Updated existing spec at index:', index);
-      }
-    } else {
-      // 추가 모드
-      specsArray.push(newSpec);
-      console.log('✨ Added new spec');
-    }
+      const data = await response.json();
+      console.log('✨ Spec saved successfully:', data);
+      alert('스펙이 저장되었습니다!');
 
-    localStorage.setItem('userSpecs', JSON.stringify(specsArray));
-    console.log('📝 All specs saved to localStorage:', specsArray);
+    } catch (e) {
+      console.error('❌ Error saving spec:', e);
+      alert(`오류: ${e.message}`);
+      return;
+    }
     
     // 폼 초기화
     setState({
@@ -316,21 +370,29 @@ function Spec() {
     }
   };
 
-  const handleDeleteSpec = (specId) => {
+  const handleDeleteSpec = async (specId) => {
     if (window.confirm('이 스펙을 삭제하시겠습니까?')) {
-      let specsArray = [];
-      const savedSpecs = localStorage.getItem('userSpecs');
-      if (savedSpecs) {
-        try {
-          const parsed = JSON.parse(savedSpecs);
-          specsArray = Array.isArray(parsed) ? parsed : [parsed];
-          specsArray = specsArray.filter(s => s.id !== specId);
-          localStorage.setItem('userSpecs', JSON.stringify(specsArray));
-          console.log('🗑️ Spec deleted:', specId);
-          loadSpecs();
-        } catch (e) {
-          console.error('Error deleting spec:', e);
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`${API_BASE_URL}/api/specs/${specId}/`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || '스펙 삭제 실패');
         }
+
+        console.log('🗑️ Spec deleted:', specId);
+        alert('스펙이 삭제되었습니다!');
+        loadSpecs();
+      } catch (e) {
+        console.error('Error deleting spec:', e);
+        alert(`오류: ${e.message}`);
       }
     }
   };
@@ -369,11 +431,6 @@ function Spec() {
                     <span className="preview-career">
                       {spec.career || '경력 없음'}
                     </span>
-                    {spec.savedAt && (
-                      <span className="preview-modified">
-                        {new Date(spec.savedAt).toLocaleDateString('ko-KR')}
-                      </span>
-                    )}
                   </div>
                   <span className="toggle-icon">▼</span>
                 </div>
@@ -399,11 +456,9 @@ function Spec() {
                         <strong>경력:</strong> {spec.career}
                       </div>
                     )}
-                    {spec.region && (
-                      <div className="spec-item">
-                        <strong>지역:</strong> {spec.region}
-                      </div>
-                    )}
+                    <div className="spec-item">
+                      <strong>지역:</strong> {spec.region ? spec.region : '미선택'}
+                    </div>
                     {spec.companyName && (
                       <div className="spec-item">
                         <strong>회사명:</strong> {spec.companyName}
@@ -460,7 +515,7 @@ function Spec() {
         </section>
       )}
 
-      {state.showAdditionalBox && (
+      {state.showDetailBox && (
         <div className="additional-box">
           <section>
             <h3>경력</h3>

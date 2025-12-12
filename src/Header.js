@@ -30,6 +30,8 @@ function Header() {
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    localStorage.removeItem("userInfo");
+    
     setIsLoggedIn(false);
     window.dispatchEvent(new Event('loginStatusChanged'));
     alert("로그아웃되었습니다.");

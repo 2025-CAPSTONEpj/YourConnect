@@ -18,51 +18,30 @@ function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-        email: username,
-        password: password,
+          email: username,
+          password: password,
         }),
-    });
+      });
 
       const data = await response.json();
       console.log("서버 응답:", data);
 
-      if (data.access) {
-        localStorage.setItem("access_token", data.access);
-        localStorage.setItem("refresh_token", data.refresh);
-
-        // 사용자 정보 가져오기
-        try {
-          const userResponse = await fetch("http://localhost:8000/api/user/profile/", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${data.access}`
-            }
-          });
-
-          if (userResponse.ok) {
-            const userResponseData = await userResponse.json();
-            // 백엔드에서 {data: {...}, message: "..."} 형식으로 반환하므로 data 추출
-            const userData = userResponseData.data || userResponseData;
-            
-            // 백엔드 필드명을 프론트엔드 형식으로 매핑
-            const userInfo = {
-              type: userData.role === 'mentor' ? '멘토' : '일반',
-              name: userData.name || '',
-              birth: userData.birth || '',
-              gender: userData.gender === 'male' ? '남자' : (userData.gender === 'female' ? '여자' : ''),
-              email: userData.email || username,
-              marketing: userData.agree_ad ? '동의' : '비동의'
-            };
-            localStorage.setItem('userInfo', JSON.stringify(userInfo));
-            console.log('사용자 정보 저장 완료:', userInfo);
-          } else {
-            console.error('사용자 정보 가져오기 실패:', userResponse.status);
-          }
-        } catch (error) {
-          console.error("사용자 정보 가져오기 오류:", error);
-
+      if (response.ok) {
+        // 로그인 성공 - 사용자 정보 저장
+        const userData = data.user || data;
+        
+        // 토큰 저장
+        if (data.access) {
+          localStorage.setItem("access_token", data.access);
         }
+        
+        const userInfo = {
+          type: userData.role === 'mentor' ? '멘토' : '일반',
+          name: userData.first_name || userData.name || '',
+          email: userData.email || username,
+        };
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        console.log('사용자 정보 저장 완료:', userInfo);
 
         // 로그인 상태 변경 이벤트 발생
         window.dispatchEvent(new Event('loginStatusChanged'));
@@ -70,7 +49,7 @@ function LoginForm() {
         alert("로그인 성공! 메인 페이지로 이동합니다.");
         navigate('/');
       } else {
-        alert("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.");
+        alert("로그인 실패: " + (data.error || "이메일 또는 비밀번호를 확인해주세요."));
       }
 
     } catch (error) {

@@ -31,27 +31,68 @@ function Profile() {
     return () => window.removeEventListener('pageshow', handlePageShow);
   }, []);
 
-  const loadAndDisplaySpecs = () => {
+  const loadAndDisplaySpecs = async () => {
     try {
       setLoading(true);
-      const savedSpecs = localStorage.getItem('userSpecs');
-      console.log('📦 Loaded specs from localStorage:', savedSpecs);
       
-      if (savedSpecs) {
-        const parsed = JSON.parse(savedSpecs);
-        const specsArray = Array.isArray(parsed) ? parsed : [parsed];
-        const withIds = specsArray.map((spec, idx) => ({
-          ...spec,
-          id: spec.id || `spec-${Date.now()}-${idx}`
-        }));
-        console.log('✅ Parsed specs:', withIds);
-        setSpecs(withIds);
+      // localStorage에서 이전 사용자의 스펙 데이터 정리
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('userSpecs')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      const token = localStorage.getItem('access_token');
+      
+      const response = await fetch(`${API_BASE_URL}/api/specs/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`스펙 로드 실패: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('📦 Loaded specs from API:', data.specs);
+      
+      if (data.specs && data.specs.length > 0) {
+        const formattedSpecs = data.specs.map(spec => {
+          // description에서 duty와 subDuty 파싱 (형식: "개발 - FE")
+          let duty = '';
+          let subDuty = '';
+          
+          if (spec.description) {
+            const parts = spec.description.split(' - ');
+            duty = parts[0] || '';
+            subDuty = parts[1] || '';
+          }
+          
+          return {
+            id: spec.id,
+            duty: duty,
+            subDuty: subDuty,
+            companyName: spec.company,
+            career: spec.career_type || '경력 없음',
+            position: spec.role,
+            region: spec.region || '',
+            skills: spec.skills || '',
+            savedAt: spec.created_at
+          };
+        });
+        console.log('✅ Formatted specs:', formattedSpecs);
+        setSpecs(formattedSpecs);
       } else {
-        console.log('❌ No specs found in localStorage');
+        console.log('❌ No specs found');
         setSpecs([]);
       }
     } catch (e) {
       console.error('⚠️ Error loading specs:', e);
+      setError(e.message);
       setSpecs([]);
     } finally {
       setLoading(false);

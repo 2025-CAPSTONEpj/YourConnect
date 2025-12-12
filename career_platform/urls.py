@@ -21,3 +21,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("core.urls")),  # ← 요 줄 반드시 필요
 ]
+
+""" 프로젝트 전체 URL 설정 파일 career_platform/urls.py """
