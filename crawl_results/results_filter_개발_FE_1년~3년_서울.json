@@ -5,7 +5,7 @@
     "experience": "경력무관",
     "location": "서울 강남구",
     "deadline": "채용시",
-    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52209164&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+BE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=efc2fb68-1f53-4384-a8a8-7bf80ebde1a8",
+    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52209164&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=11118d49-c527-4997-a580-c4eb97976a6d",
     "source": "Saramin"
   },
   {
@@ -27,12 +27,12 @@
     "source": "GroupBy"
   },
   {
-    "title": "Mid-level Full Stack Developer (전문연구요원 가능)",
-    "company": "어크로스비",
-    "experience": "2~10년",
-    "location": "서울 관악구",
-    "deadline": "~12.08(월)",
-    "link": "https://groupby.kr/positions/3894",
+    "title": "[미리캔버스] ML Engineer (GenAI / Agent / LMM) [전문연구요원]",
+    "company": "미리디",
+    "experience": "1~5년",
+    "location": "서울 구로구",
+    "deadline": "~12.09(화)",
+    "link": "https://groupby.kr/positions/8161",
     "source": "GroupBy"
   },
   {
@@ -63,12 +63,30 @@
     "source": "GroupBy"
   },
   {
+    "title": "앱(Flutter) 개발",
+    "company": "어플레이즈",
+    "experience": "3~10년",
+    "location": "서울 강남구",
+    "deadline": "~12.02(화)",
+    "link": "https://groupby.kr/positions/8075",
+    "source": "GroupBy"
+  },
+  {
     "title": "블록체인 코어 개발자 (Golang) 채용",
     "company": "온블록",
     "experience": "3~10년",
     "location": "서울 강남구",
     "deadline": "~11.27(목)",
     "link": "https://groupby.kr/positions/8012",
+    "source": "GroupBy"
+  },
+  {
+    "title": "주니어 풀스택 개발자(3년- )",
+    "company": "그로스메이커팀(스케일업스쿼드)",
+    "experience": "3~7년",
+    "location": "서울 중구",
+    "deadline": "~11.27(목)",
+    "link": "https://groupby.kr/positions/5295",
     "source": "GroupBy"
   },
   {
@@ -90,48 +108,12 @@
     "source": "GroupBy"
   },
   {
-    "title": "[LEWKIN] Global E-commerce 프론트엔드 개발자",
-    "company": "뉴웨이브커머스",
-    "experience": "3~10년",
-    "location": "서울 서초구",
-    "deadline": "~11.04(화)",
-    "link": "https://groupby.kr/positions/7586",
-    "source": "GroupBy"
-  },
-  {
-    "title": "백앤드 개발자 (Back _end)(3년차 이상)",
-    "company": "코넥시오에이치",
-    "experience": "3~10년",
-    "location": "서울 강남구",
-    "deadline": "~10.29(수)",
-    "link": "https://groupby.kr/positions/7484",
-    "source": "GroupBy"
-  },
-  {
-    "title": "[Coxwave Align] 프론트엔드 엔지니어",
-    "company": "콕스웨이브",
-    "experience": "3~10년",
-    "location": "서울",
-    "deadline": "~10.29(수)",
-    "link": "https://groupby.kr/positions/6116",
-    "source": "GroupBy"
-  },
-  {
     "title": "Product Engineer (3년 이상)",
     "company": "퍼슬리",
     "experience": "3~9년",
     "location": "서울 중구",
     "deadline": "~10.23(목)",
     "link": "https://groupby.kr/positions/6932",
-    "source": "GroupBy"
-  },
-  {
-    "title": "프론트 엔지니어 (RN 우대)",
-    "company": "데어워크",
-    "experience": "3~10년",
-    "location": "서울 서초구",
-    "deadline": "~10.23(목)",
-    "link": "https://groupby.kr/positions/7392",
     "source": "GroupBy"
   },
   {
@@ -144,12 +126,21 @@
     "source": "GroupBy"
   },
   {
-    "title": "웹 프론트엔드 개발자 (경력, 2년이상)",
-    "company": "그로잉랩",
+    "title": "SSD Firmware Engineer",
+    "company": "FADU",
+    "experience": "3~10년",
+    "location": "서울 강남구",
+    "deadline": "~10.17(금)",
+    "link": "https://groupby.kr/positions/7357",
+    "source": "GroupBy"
+  },
+  {
+    "title": "B2B 탄소회계 SaaS 백엔드 개발자(경력) ",
+    "company": "엔츠",
     "experience": "2~10년",
-    "location": "서울 마포구",
+    "location": "서울 강남구",
     "deadline": "~10.14(화)",
-    "link": "https://groupby.kr/positions/1312",
+    "link": "https://groupby.kr/positions/7247",
     "source": "GroupBy"
   },
   {
@@ -162,21 +153,21 @@
     "source": "GroupBy"
   },
   {
-    "title": "[앱 개발] 앱 프론트엔드 Flutter 개발자 채용 [경력 2년 이상]",
-    "company": "키즐링",
-    "experience": "2~10년",
-    "location": "서울",
-    "deadline": "~09.10(수)",
-    "link": "https://groupby.kr/positions/6771",
-    "source": "GroupBy"
-  },
-  {
     "title": "[주니어/시니어] FE 프론트엔드 개발자(React/ReactNative)",
     "company": "낭만상회",
     "experience": "3~7년",
     "location": "서울 강남구",
     "deadline": "~09.02(화)",
     "link": "https://groupby.kr/positions/6577",
+    "source": "GroupBy"
+  },
+  {
+    "title": "[커머스프로덕션] Jr. QA 엔지니어",
+    "company": "미리디",
+    "experience": "1~3년",
+    "location": "서울 구로구",
+    "deadline": "~09.01(월)",
+    "link": "https://groupby.kr/positions/673",
     "source": "GroupBy"
   },
   {
@@ -216,6 +207,15 @@
     "source": "GroupBy"
   },
   {
+    "title": "Backend Engineer",
+    "company": "알고케어",
+    "experience": "3~9년",
+    "location": "서울",
+    "deadline": "~08.19(화)",
+    "link": "https://groupby.kr/positions/6322",
+    "source": "GroupBy"
+  },
+  {
     "title": "머신러닝 엔지니어 - 자연어 처리 (NLP)",
     "company": "스튜디오랩",
     "experience": "3~7년",
@@ -231,15 +231,6 @@
     "location": "서울 영등포구",
     "deadline": "~08.04(월)",
     "link": "https://groupby.kr/positions/6130",
-    "source": "GroupBy"
-  },
-  {
-    "title": "[LIKEY] 웹프론트 개발자 (Vue.js)",
-    "company": "티피씨인터넷",
-    "experience": "3~10년",
-    "location": "서울 강남구",
-    "deadline": "~07.28(월)",
-    "link": "https://groupby.kr/positions/5157",
     "source": "GroupBy"
   },
   {
@@ -261,6 +252,15 @@
     "source": "GroupBy"
   },
   {
+    "title": "Python 백엔드 개발자 (3년차 이상) ",
+    "company": "왓섭",
+    "experience": "3~7년",
+    "location": "서울",
+    "deadline": "~07.10(목)",
+    "link": "https://groupby.kr/positions/5719",
+    "source": "GroupBy"
+  },
+  {
     "title": "React Native 앱 프론트엔드 개발",
     "company": "버닛",
     "experience": "1~10년",
@@ -279,15 +279,6 @@
     "source": "GroupBy"
   },
   {
-    "title": "백엔드 개발자",
-    "company": "래딩랩스",
-    "experience": "3~8년",
-    "location": "서울 강서구",
-    "deadline": "~04.21(월)",
-    "link": "https://groupby.kr/positions/2655",
-    "source": "GroupBy"
-  },
-  {
     "title": "플러터 개발자",
     "company": "래딩랩스",
     "experience": "3~8년",
@@ -297,21 +288,12 @@
     "source": "GroupBy"
   },
   {
-    "title": "[애드테크/마케팅/리워드앱] 서버 개발자 (백엔드)",
-    "company": "원셀프월드",
+    "title": "백엔드 개발자",
+    "company": "래딩랩스",
     "experience": "3~8년",
-    "location": "서울 강남구",
-    "deadline": "~04.16(수)",
-    "link": "https://groupby.kr/positions/4742",
-    "source": "GroupBy"
-  },
-  {
-    "title": "ReactNative/React 프론트 개발자",
-    "company": "페이워크",
-    "experience": "3~10년",
-    "location": "서울",
-    "deadline": "~04.07(월)",
-    "link": "https://groupby.kr/positions/374",
+    "location": "서울 강서구",
+    "deadline": "~04.21(월)",
+    "link": "https://groupby.kr/positions/2655",
     "source": "GroupBy"
   },
   {
@@ -333,21 +315,21 @@
     "source": "GroupBy"
   },
   {
-    "title": "[라이브클래스] Back-end Engineer",
-    "company": "퓨쳐스콜레",
-    "experience": "3~10년",
-    "location": "서울 성동구",
-    "deadline": "~03.04(화)",
-    "link": "https://groupby.kr/positions/4016",
-    "source": "GroupBy"
+    "title": "프론트엔드 개발자 (경력)",
+    "company": "(주)아인잡",
+    "experience": "경력 3~10년",
+    "location": "서울 강남구",
+    "deadline": "~ 12/27(토)",
+    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52418968&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=11118d49-c527-4997-a580-c4eb97976a6d",
+    "source": "Saramin"
   },
   {
-    "title": "(주)나인빅스 - H5 Game FullStack 개발자 모집( TS )",
-    "company": "주식회사나인빅스",
-    "experience": "경력 1~5년",
-    "location": "서울 성북구",
+    "title": "[일본:누구(nugu)] FE엔지니어",
+    "company": "(주)메디쿼터스",
+    "experience": "경력 3~7년",
+    "location": "서울 강남구",
     "deadline": "~ 12/23(화)",
-    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52380137&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+BE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=efc2fb68-1f53-4384-a8a8-7bf80ebde1a8",
+    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52385749&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=11118d49-c527-4997-a580-c4eb97976a6d",
     "source": "Saramin"
   },
   {
@@ -356,7 +338,7 @@
     "experience": "경력무관",
     "location": "서울 용산구",
     "deadline": "~ 01/20(화)",
-    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52371710&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+BE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=efc2fb68-1f53-4384-a8a8-7bf80ebde1a8",
+    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52371710&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=11118d49-c527-4997-a580-c4eb97976a6d",
     "source": "Saramin"
   },
   {
@@ -365,7 +347,7 @@
     "experience": "경력무관",
     "location": "서울 강남구",
     "deadline": "~ 01/11(일)",
-    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52549019&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+BE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=efc2fb68-1f53-4384-a8a8-7bf80ebde1a8",
+    "link": "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=52549019&location=ts&searchword=%EA%B0%9C%EB%B0%9C+FE+1%EB%85%843%EB%85%84&searchType=search&paid_fl=n&search_uuid=11118d49-c527-4997-a580-c4eb97976a6d",
     "source": "Saramin"
   }
 ]

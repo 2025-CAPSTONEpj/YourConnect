@@ -2,6 +2,7 @@ import os
 import json
 import subprocess
 import threading
+import logging
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -12,7 +13,15 @@ from .crawler import cleanup_old_crawl_files
 from django.contrib.auth import get_user_model, authenticate, login
 
 from .models import User
-from .crawler import crawl_with_filters, _filter_by_region
+from .crawler import crawl_with_filters, _filter_by_region, crawl_saramin, crawl_groupby, generate_email_html
+
+# 로깅 설정
+logger = logging.getLogger(__name__)
+log_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'debug_email.log')
+handler = logging.FileHandler(log_file, encoding='utf-8')
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
 # 파일명 규칙을 한 군데에서 관리하기 위한 헬퍼
@@ -99,8 +108,16 @@ def login_api(request):
         if not user.check_password(password):
             return JsonResponse({"error": "이메일 또는 비밀번호가 올바르지 않습니다."}, status=401)
         
-        # 로그인 처리
+        # 로그인 처리 (세션 설정)
         login(request, user)
+        
+        # ⭐ 현재 로그인 사용자 명시적으로 확인
+        logger.info(f"\n[✅ 로그인 성공]")
+        logger.info(f"  - 사용자: {user.username}")
+        logger.info(f"  - 이메일: {user.email}")
+        logger.info(f"  - request.user: {request.user.username} ({request.user.email})")
+        print(f"[✅ 로그인 성공] {user.username} ({user.email})")
+        print(f"    request.user 확인: {request.user.username} ({request.user.email})")
         
         # 간단한 토큰 생성 (user id를 base64로 인코딩)
         token = base64.b64encode(f"{user.id}:{user.email}".encode()).decode()
@@ -120,6 +137,10 @@ def login_api(request):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
+        import traceback
+        logger.error(f"❌ 로그인 오류: {e}")
+        print(f"❌ 로그인 오류: {e}")
+        print(traceback.format_exc())
         return JsonResponse({"error": str(e)}, status=500)
 
 
@@ -470,6 +491,223 @@ def run_crawling_api(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+# ✅ 이메일 발송 테스트 API
+@csrf_exempt
+@require_http_methods(["POST", "GET"])
+def test_email_api(request):
+    """
+    GET/POST /api/test-email/
+    테스트 이메일 발송
+    """
+    print("\n[TEST] test_email_api 호출됨")
+    
+    if not request.user.is_authenticated:
+        # 테스트용 - 첫 번째 사용자 사용
+        user = get_user_model().objects.first()
+        if not user:
+            return JsonResponse({"error": "사용자 없음"}, status=400)
+    else:
+        user = request.user
+    
+    print(f"📧 테스트 이메일 발송: {user.email}")
+    
+    try:
+        from .tasks import send_crawl_results_email
+        
+        # 테스트 데이터
+        test_jobs = [
+            {"title": "테스트 공고 1", "company": "테스트회사", "location": "서울", "deadline": "2025-12-31", "link": "https://example.com/1"},
+            {"title": "테스트 공고 2", "company": "테스트회사2", "location": "경기", "deadline": "2025-12-25", "link": "https://example.com/2"},
+        ]
+        
+        send_crawl_results_email(user, test_jobs)
+        
+        return JsonResponse({"message": "테스트 이메일 발송 완료", "email": user.email})
+    
+    except Exception as e:
+        print(f"❌ 오류: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# ✅ 즉시 크롤링 및 이메일 발송 API
+@csrf_exempt
+@require_http_methods(["POST"])
+def send_crawl_now_api(request):
+    """
+    POST /api/crawl-send-now/
+    
+    요청 헤더:
+    {
+        "Authorization": "Bearer <token>" (선택사항)
+    }
+    
+    요청 데이터:
+    {
+        "duty": "개발",
+        "subDuties": ["FE", "BE"],
+        "career": "1년~3년",
+        "regions": ["서울", "경기"],
+        "email": "user@example.com" (필수)
+    }
+    
+    ✅ 요청된 이메일로 자동 발송됨!
+    """
+    logger.info(f"\n[🔍 API 요청] send_crawl_now_api 호출됨")
+    
+    try:
+        # 요청 데이터 파싱
+        data = json.loads(request.body) if request.body else {}
+        user_email = data.get('email', '').strip()
+        duty = data.get('duty', '')
+        subDuties = data.get('subDuties', [])
+        career = data.get('career', '')
+        regions = data.get('regions', [])
+        
+        # ⭐ 이메일이 없으면 세션에서 조회 시도
+        if not user_email:
+            if request.user.is_authenticated:
+                user_email = request.user.email
+                user_username = request.user.username
+            else:
+                logger.warning(f"❌ 이메일 정보 없음 및 로그인되지 않은 사용자")
+                return JsonResponse({"error": "이메일이 필요합니다."}, status=400)
+        else:
+            # 이메일로 사용자 조회
+            try:
+                user = User.objects.get(email=user_email)
+                user_username = user.username
+            except User.DoesNotExist:
+                logger.warning(f"❌ 사용자 없음: {user_email}")
+                return JsonResponse({"error": f"사용자를 찾을 수 없습니다: {user_email}"}, status=404)
+        
+        logger.info(f"✅ 요청 수신: {user_username} ({user_email})")
+        logger.info(f"📝 검색 조건: duty={duty}, subDuties={subDuties}, career={career}, regions={regions}")
+        print(f"✅ 요청 수신: {user_username} ({user_email})")
+        print(f"📝 검색 조건: duty={duty}, subDuties={subDuties}, career={career}, regions={regions}")
+        
+        # 만약 조건이 제공되면 그것으로 검색, 없으면 보유스펙으로 검색
+        if duty or subDuties or career or regions:
+            search_keyword = duty
+            print(f"\n[🔍] {user_username}님을 위한 조건 기반 크롤링 시작")
+            print(f"  직무: {duty}, 세부: {subDuties}, 경력: {career}, 지역: {regions}")
+        else:
+            # 보유스펙으로 크롤링
+            try:
+                user_obj = User.objects.get(email=user_email)
+                if not user_obj.spec_job:
+                    return JsonResponse({
+                        "error": "보유스펙이 저장되지 않았습니다.",
+                        "message": "프로필에서 보유스펙을 먼저 선택하거나, 헤드헌팅 페이지에서 조건을 선택해주세요."
+                    }, status=400)
+                search_keyword = user_obj.spec_job
+                print(f"\n[🔍] {user_username}님을 위한 보유스펙 기반 크롤링 시작 (검색어: {search_keyword})")
+            except User.DoesNotExist:
+                return JsonResponse({"error": "사용자를 찾을 수 없습니다."}, status=404)
+        
+        # 백그라운드에서 크롤링 실행
+        def run_crawl_and_send():
+            try:
+                # Saramin + GroupBy에서 공고 수집
+                results = []
+                try:
+                    saramin_results = crawl_saramin(search_keyword)
+                    results.extend(saramin_results)
+                    print(f"✅ Saramin 크롤링 완료: {len(saramin_results)}개")
+                except Exception as e:
+                    print(f"⚠️ Saramin 크롤링 오류: {e}")
+                
+                try:
+                    groupby_results = crawl_groupby(search_keyword)
+                    results.extend(groupby_results)
+                    print(f"✅ GroupBy 크롤링 완료: {len(groupby_results)}개")
+                except Exception as e:
+                    print(f"⚠️ GroupBy 크롤링 오류: {e}")
+                
+                # 중복 제거
+                results = list({r["link"]: r for r in results}.values())
+                print(f"✅ 크롤링 완료 → {len(results)}개 공고 (중복 제거 후)")
+                
+                # 조건이 있으면 필터링
+                if regions:
+                    results = _filter_by_region(results, regions)
+                    print(f"✅ 지역 필터링 후: {len(results)}개")
+                
+                if career:
+                    results = crawl_with_filters(
+                        duty=duty,
+                        subDuties=subDuties,
+                        position='',
+                        career=career,
+                        region=''
+                    )
+                    print(f"✅ 경력 필터링 후: {len(results)}개")
+                
+                # 이메일 발송
+                if user_email:  # ⭐ user.email 대신 user_email 사용
+                    # ⭐ Celery 대신 직접 발송
+                    from django.core.mail import send_mail
+                    from .crawler import generate_email_html
+                    
+                    logger.info(f"📧 [디버그] user_email 값: {user_email} (타입: {type(user_email).__name__})")
+                    print(f"📧 [디버그] user_email 값: {user_email} (타입: {type(user_email).__name__})")
+                    
+                    logger.info(f"📧 이메일 발송 시작: {user_email}, 공고 {len(results)}개")
+                    print(f"📧 이메일 발송 시작: {user_email}, 공고 {len(results)}개")
+                    
+                    try:
+                        html_content = generate_email_html(user, results)
+                        
+                        # 발송 전 최종 확인
+                        recipient_list = [user_email]
+                        logger.info(f"📧 [최종 확인] recipient_list: {recipient_list}")
+                        print(f"📧 [최종 확인] recipient_list: {recipient_list}")
+                        
+                        result = send_mail(
+                            subject="[YourConnect] 검색 결과가 도착했습니다! ✨",
+                            message="이메일을 HTML 형식으로 확인하세요.",
+                            from_email="yourconnect100@gmail.com",
+                            recipient_list=recipient_list,  # ⭐ 명시적으로 리스트 전달
+                            html_message=html_content,
+                            fail_silently=False
+                        )
+                        logger.info(f"✅ [{user_email}] 이메일 발송 완료 (결과: {result})")
+                        print(f"✅ [{user_email}] 이메일 발송 완료 (결과: {result})")
+                    except Exception as e:
+                        logger.error(f"❌ 이메일 발송 오류: {e}")
+                        print(f"❌ 이메일 발송 오류: {e}")
+                else:
+                    logger.warning(f"⚠️ {user_username}: 이메일 주소가 없음")
+                    print(f"⚠️ {user_username}: 이메일 주소가 없음")
+            
+            except Exception as e:
+                import traceback
+                print(f"❌ 크롤링 중 오류: {e}")
+                print(traceback.format_exc())
+        
+        # 백그라운드 스레드에서 실행
+        thread = threading.Thread(target=run_crawl_and_send)
+        thread.daemon = True
+        thread.start()
+        
+        return JsonResponse({
+            "message": f"✅ 크롤링이 시작되었습니다.",
+            "details": f"잠시 후 {user_email}로 이메일을 받으실 수 있습니다.",
+            "user": {
+                "username": user_username,
+                "email": user_email,
+                "search_keyword": search_keyword if 'search_keyword' in locals() else duty
+            }
+        })
+    
+    except Exception as e:
+        import traceback
+        print(f"❌ 오류: {e}")
+        print(traceback.format_exc())
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 # ✅ JSON 결과 반환
 def get_user_jobs(request, username):
     base_dir = os.path.join(os.getcwd(), "crawl_results")
@@ -563,3 +801,26 @@ def check_crawl_status(request):
     
     except Exception as e:
         return JsonResponse({"error": str(e), "completed": False}, status=500)
+
+
+# ✅ 현재 로그인 상태 확인 API
+@csrf_exempt
+@require_http_methods(["GET"])
+def check_login_status(request):
+    """
+    현재 로그인한 사용자 정보 반환
+    GET /api/check-login/
+    """
+    if request.user.is_authenticated:
+        return JsonResponse({
+            "logged_in": True,
+            "username": request.user.username,
+            "email": request.user.email,
+            "id": request.user.id
+        })
+    else:
+        return JsonResponse({
+            "logged_in": False,
+            "message": "로그인되지 않음"
+        })
+

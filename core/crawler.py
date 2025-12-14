@@ -537,6 +537,71 @@ def crawl_with_filters(duty="", subDuties=None, position="", career="", region="
 
 
 # ===============================================================
+# 이메일 생성 함수
+# ===============================================================
+def generate_email_html(user, crawl_results):
+    """
+    크롤링 결과를 HTML 이메일 형식으로 변환
+    
+    Args:
+        user: User 객체
+        crawl_results: 크롤링 결과 리스트
+    
+    Returns:
+        HTML 문자열
+    """
+    if not crawl_results:
+        return f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; color: #333;">
+                <h2>🎯 {user.username}님의 채용 공고 검색 결과</h2>
+                <p>검색어: {user.spec_job}</p>
+                <p style="color: #999;">📭 현재 매칭되는 채용 공고가 없습니다.</p>
+            </body>
+        </html>
+        """
+    
+    job_html = ""
+    for idx, job in enumerate(crawl_results[:20], 1):  # 상위 20개만 표시
+        job_html += f"""
+        <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">
+                <strong>{idx}. {job.get('title', 'N/A')[:50]}</strong><br>
+                <small style="color: #666;">
+                    🏢 {job.get('company', 'N/A')} | 📍 {job.get('location', 'N/A')} | ⏰ {job.get('deadline', 'N/A')}<br>
+                    출처: {job.get('source', 'Unknown')}
+                </small>
+                <br><a href="{job.get('link', '#')}" style="color: #0066cc; text-decoration: none;">👉 자세히 보기</a>
+            </td>
+        </tr>
+        """
+    
+    html_content = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="color: #0066cc;">🎯 {user.username}님의 채용 공고 검색 결과</h2>
+                <p style="color: #666;">검색어: <strong>{user.spec_job}</strong> | 총 <strong>{len(crawl_results)}</strong>개 공고</p>
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                
+                <table style="width: 100%; border-collapse: collapse;">
+                    {job_html}
+                </table>
+                
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                <p style="color: #999; font-size: 12px;">
+                    이 이메일은 자동으로 발송되었습니다. 매주 월요일 오전 9시에 발송됩니다.<br>
+                    웹사이트에서 검색 설정을 변경할 수 있습니다.
+                </p>
+            </div>
+        </body>
+    </html>
+    """
+    
+    return html_content
+
+
+# ===============================================================
 # 실행 엔진
 # ===============================================================
 def run_weekly_crawl(mode="desired"):

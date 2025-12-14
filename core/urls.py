@@ -9,9 +9,12 @@ urlpatterns = [
     path("auth/logout/", views.logout_api, name="logout"),
     path("auth/user/", views.user_info_api, name="user_info"),
     path("auth/profile/", views.profile_update_api, name="profile_update"),
+    path("check-login/", views.check_login_status, name="check_login"),  # ⭐ 로그인 상태 확인
     
     # 크롤링 관련
     path("crawl/", views.run_crawling_api, name="run_crawling"),
+    path("crawl-send-now/", views.send_crawl_now_api, name="send_crawl_now"),
+    path("test-email/", views.test_email_api, name="test_email"),  # 테스트 엔드포인트
     path("crawl-filters/", views.crawl_with_filters_api, name="crawl_with_filters"),
     path("crawl-results/", views.get_crawl_results, name="get_crawl_results"),
     path("crawl-status/", views.check_crawl_status, name="check_crawl_status"),

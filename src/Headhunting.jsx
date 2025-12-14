@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './headhunting.css';
 
@@ -523,6 +523,76 @@ function Headhunting() {
     setTotalCount(0);
   };
 
+  // ⭐ 즉시 크롤링 및 이메일 발송 함수
+  const handleSendCrawlNow = async () => {
+    try {
+      // 선택한 조건 확인
+      const duty = selectedMainJob || '';
+      const subDuties = state.selectedJobs || [];
+      const career = state.selectedCareers.length > 0 ? state.selectedCareers[0] : '';
+      const regions = state.selectedRegions || [];
+
+      if (!duty && !subDuties.length && !career && !regions.length) {
+        alert('조건을 선택해주세요.\n(직무, 경력, 지역 중 하나 이상 필수)');
+        return;
+      }
+
+      // 로딩 상태 표시
+      const btn = document.querySelector('.crawl-now-btn');
+      btn.textContent = '이메일 발송 중...';
+      btn.disabled = true;
+
+      // ⭐ localStorage에서 사용자 정보 조회
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const userEmail = userInfo.email || '';
+      
+      console.log('📧 사용자 이메일:', userEmail);
+
+      const requestData = {
+        email: userEmail,  // ⭐ 이메일 포함!
+        duty: duty,
+        subDuties: subDuties,
+        career: career,
+        regions: regions
+      };
+
+      console.log('📤 크롤링 요청 데이터:', requestData);
+
+      const response = await fetch(`${API_BASE_URL}/api/crawl-send-now/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        if (response.status === 400) {
+          alert(errorData.message || '오류: ' + errorData.error);
+        } else if (response.status === 401) {
+          alert('❌ 로그인이 필요합니다.\n\n로그인 페이지로 이동합니다.');
+          navigate('/login');
+        } else {
+          alert('크롤링 요청 실패: ' + (errorData.error || ''));
+        }
+        return;
+      }
+
+      const data = await response.json();
+      alert(`✅ 크롤링이 시작되었습니다!\n\n검색 조건:\n- 직무: ${duty || '전체'}\n- 경력: ${career || '무관'}\n- 지역: ${regions.length > 0 ? regions.join(', ') : '전체'}\n\n잠시 후 귀하의 이메일로 결과를 받으실 수 있습니다.`);
+      console.log('크롤링 요청 성공:', data);
+    } catch (error) {
+      console.error('크롤링 요청 오류:', error);
+      alert('크롤링 요청 중 오류가 발생했습니다.');
+    } finally {
+      const btn = document.querySelector('.crawl-now-btn');
+      btn.textContent = '이메일로 결과 받기';
+      btn.disabled = false;
+    }
+  };
+
   const handlePageChange = (newPage) => {
     console.log(`📄 페이지 변경: ${state.currentPage} → ${newPage}`);
     console.log(`📊 전체 결과 수: ${allSearchResults.length}, 현재 페이지: ${newPage}`);
@@ -993,6 +1063,7 @@ function Headhunting() {
 
           <div className="filter-group search-action-group">
             <button className="search-btn search-btn-large" onClick={handleSearch}>조건으로 검색</button>
+            <button className="crawl-now-btn search-btn search-btn-large" onClick={handleSendCrawlNow}>이메일로 결과 받기</button>
             <button className="reset-btn reset-btn-large" onClick={handleReset}>초기화</button>
           </div>
         </section>
@@ -1171,3 +1242,4 @@ function Headhunting() {
 }
 
 export default Headhunting;
+
